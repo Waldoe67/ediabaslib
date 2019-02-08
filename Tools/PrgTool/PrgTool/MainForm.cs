@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PrgTool {
@@ -37,48 +33,56 @@ namespace PrgTool {
                                                 "<body>";
 
         public MainForm() {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void btnFileBrowse_Click(object sender, EventArgs e) {
-            using(var fbd = new FolderBrowserDialog()) {
-                DialogResult result = fbd.ShowDialog();
+            using(OpenFileDialog ofd = new OpenFileDialog()) {
+                ofd.CheckFileExists = true;
+                ofd.CheckPathExists = true;
+                ofd.Multiselect = false;
+                ofd.Filter = "PRG files|*.prg";
+                ofd.ReadOnlyChecked = true;
+                ofd.Title = "Select PRG file";
 
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath)) {
-                    this.txtPath.Text = fbd.SelectedPath;
+                DialogResult result = ofd.ShowDialog();
+
+                if(result == DialogResult.OK && !string.IsNullOrWhiteSpace(ofd.FileName)) {
+                    this.txtPath.Text = ofd.FileName;
                 }
             }
         }
 
         private bool IsParsing {
             get {
-                return _parsing;
+                return this._parsing;
             }
 
             set {
-                _parsing = value;
+                this._parsing = value;
 
-                this.txtPath.ReadOnly = _parsing;
-                this.btnFileBrowse.Enabled = !_parsing;
-                this.btnParse.Enabled = !_parsing;
+                this.txtPath.ReadOnly = this._parsing;
+                this.btnFileBrowse.Enabled = !this._parsing;
+                this.btnParse.Enabled = !this._parsing;
             }
         }
         private void btnParse_Click(object sender, EventArgs e) {
             this.IsParsing = true;
 
-            //this.txtPath.Text = "C:\\Users\\christiang\\Code\\ECU";
+            if(string.IsNullOrEmpty(this.txtPath.Text)) {
+                MessageBox.Show("Please selected a path first!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } else if(!this.txtPath.Text.ToLower().EndsWith(".prg")) {
+                MessageBox.Show("Wrong file type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } else {
+                FileInfo fi = new FileInfo(this.txtPath.Text);
 
-            DirectoryInfo di = new DirectoryInfo(this.txtPath.Text);
+                if(fi.Exists) {
+                    this._descriptionInfos.Clear();
 
-            if (di.Exists) {
-                _descriptionInfos.Clear();
+                    Dictionary<string, string> errors = new Dictionary<string, string>();
+                    string markup = _ecuTemplateBegin;
 
-                FileInfo[] files = di.GetFiles("*.prg");
-                Dictionary<string, string> errors = new Dictionary<string, string>();
-                string markup = _ecuTemplateBegin;
-
-                foreach(FileInfo f in files) {
-                    using(FileStream fs = f.OpenRead()) {
+                    using(FileStream fs = fi.OpenRead()) {
                         EdiabasLib.EdiabasNet.DescriptionInfos desc = null;
                         List<string> headers = new List<string>();
                         List<string> colums = new List<string>();
@@ -122,20 +126,19 @@ namespace PrgTool {
 
                                 markup += string.Format("<table><tr>{0}</tr>&nbsp;{1}</table>", string.Join("", h.Values), string.Join("</tr>", colums));
                             }
-                            _descriptionInfos.Add(desc);
-                        } catch (Exception ex) {
-                            errors.Add(f.Name, ex.Message);
-                        }                        
+                            this._descriptionInfos.Add(desc);
+                        } catch(Exception ex) {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
+
+                    markup += "</body></html>";
+                    this.wbResult.DocumentText = markup;
+                    this.wbResult.Focus();
+                } else {
+                    MessageBox.Show("The selected path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-
-                markup += "</body></html>";
-                this.wbResult.DocumentText = markup;
-                this.wbResult.Focus();
-            } else {
-                MessageBox.Show("The selected path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
             this.IsParsing = false;
         }
     }
