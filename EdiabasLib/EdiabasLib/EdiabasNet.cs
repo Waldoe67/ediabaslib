@@ -2170,7 +2170,7 @@ namespace EdiabasLib
             public UsesInfo[] UsesInfoArray { get; set; }
         }
 
-        private class DescriptionInfos
+        public class DescriptionInfos
         {
             public List<string> GlobalComments { get; set; }
             public Dictionary<string, List<string>> JobComments { get; set; }
@@ -3886,7 +3886,7 @@ namespace EdiabasLib
             return usesInfosLocal;
         }
 
-        private DescriptionInfos ReadDescriptions(Stream fs)
+        public static DescriptionInfos ReadDescriptions(Stream fs)
         {
             byte[] buffer = new byte[4];
             fs.Position = 0x90;
@@ -4937,7 +4937,7 @@ namespace EdiabasLib
 
             if (ediabas._descriptionInfos == null)
             {
-                ediabas._descriptionInfos = ediabas.ReadDescriptions(fs);
+                ediabas._descriptionInfos = EdiabasNet.ReadDescriptions(fs);
             }
 
             if (ediabas._descriptionInfos.JobComments == null)
@@ -4987,7 +4987,7 @@ namespace EdiabasLib
 
             if (ediabas._descriptionInfos == null)
             {
-                ediabas._descriptionInfos = ediabas.ReadDescriptions(fs);
+                ediabas._descriptionInfos = EdiabasNet.ReadDescriptions(fs);
             }
 
             if (ediabas._descriptionInfos.JobComments == null)
@@ -5065,7 +5065,7 @@ namespace EdiabasLib
 
             if (ediabas._descriptionInfos == null)
             {
-                ediabas._descriptionInfos = ediabas.ReadDescriptions(fs);
+                ediabas._descriptionInfos = EdiabasNet.ReadDescriptions(fs);
             }
 
             if (ediabas._descriptionInfos.JobComments == null)
@@ -5137,7 +5137,7 @@ namespace EdiabasLib
 
             if (ediabas._descriptionInfos == null)
             {
-                ediabas._descriptionInfos = ediabas.ReadDescriptions(fs);
+                ediabas._descriptionInfos = EdiabasNet.ReadDescriptions(fs);
             }
 
             byte[] buffer = new byte[4];
