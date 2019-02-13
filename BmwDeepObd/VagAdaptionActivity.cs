@@ -27,11 +27,13 @@ namespace BmwDeepObd
         {
             public InstanceData()
             {
+                SelectedChannelText = string.Empty;
                 AdaptionValues = new string[MaxMeasValues];
                 AdaptionUnits = new string[MaxMeasValues];
             }
 
             public int SelectedChannel { get; set; }
+            public string SelectedChannelText { get; set; }
             public UInt64? AdaptionValueStart { get; set; }
             public UInt64? AdaptionValueNew { get; set; }
             public UInt64? AdaptionValueTest { get; set; }
@@ -623,10 +625,6 @@ namespace BmwDeepObd
                     foreach (UdsFileReader.UdsReader.ParseInfoAdp parseInfoAdp in _parseInfoAdaptionList)
                     {
                         StringBuilder sbDispText = new StringBuilder();
-                        if (parseInfoAdp.AdaptionChannel.HasValue)
-                        {
-                            sbDispText.Append(string.Format(CultureInfo.InvariantCulture, "{0:X02}h: ", parseInfoAdp.AdaptionChannel.Value));
-                        }
                         if (!string.IsNullOrEmpty(parseInfoAdp.DataIdString))
                         {
                             sbDispText.Append(parseInfoAdp.DataIdString);
@@ -638,6 +636,10 @@ namespace BmwDeepObd
                                 sbDispText.Append(" ");
                             }
                             sbDispText.Append(parseInfoAdp.Name);
+                            if (parseInfoAdp.SubItem.HasValue)
+                            {
+                                sbDispText.Append(string.Format(CultureInfo.InvariantCulture, " / {0}", parseInfoAdp.SubItem.Value));
+                            }
                         }
                         string displayText = sbDispText.ToString();
                         _spinnerVagAdaptionChannelAdapter.Items.Add(new StringObjType(displayText, index));
@@ -700,10 +702,12 @@ namespace BmwDeepObd
             bool isUdsEcu = XmlToolActivity.IsUdsEcu(_ecuInfo);
             if (_spinnerVagAdaptionChannel.SelectedItemPosition >= 0)
             {
-                int channel = (int)_spinnerVagAdaptionChannelAdapter.Items[_spinnerVagAdaptionChannel.SelectedItemPosition].Data;
+                StringObjType item = _spinnerVagAdaptionChannelAdapter.Items[_spinnerVagAdaptionChannel.SelectedItemPosition];
+                int channel = (int)item.Data;
                 if (channel >= 0 || isUdsEcu)
                 {
                     _instanceData.SelectedChannel = channel;
+                    _instanceData.SelectedChannelText = item.Text;
                 }
             }
 
@@ -775,7 +779,7 @@ namespace BmwDeepObd
                             {
                                 string newValueString = _editTextVagAdaptionValueNew.Text;
                                 string valueString = parseInfoAdp.DataTypeEntry.ToString(CultureInfo.InvariantCulture, _instanceData.AdaptionData, newValueString,
-                                    out string _, out object _, out byte[] newData);
+                                    out string _, out object _, out UInt32? _, out byte[] newData);
                                 if (newData != null && valueString != null)
                                 {
                                     _instanceData.AdaptionDataNew = newData;
@@ -797,7 +801,7 @@ namespace BmwDeepObd
                                     {
                                         UInt64 selectedValue = (UInt64)_spinnerVagAdaptionValueNewAdapter.Items[_spinnerVagAdaptionValueNew.SelectedItemPosition].Data;
                                         string valueString = parseInfoAdp.DataTypeEntry.ToString(CultureInfo.InvariantCulture, _instanceData.AdaptionData, selectedValue,
-                                            out string _, out object dataValueObject, out byte[] newData);
+                                            out string _, out object dataValueObject, out UInt32? _, out byte[] newData);
                                         bool restoreValue = true;
                                         if (newData != null && valueString != null)
                                         {
@@ -946,10 +950,17 @@ namespace BmwDeepObd
                         UdsFileReader.UdsReader.ParseInfoAdp parseInfoAdp = _parseInfoAdaptionList[selectedChannel];
                         if (parseInfoAdp != null)
                         {
-                            sbAdaptionComment.Append(string.Format(CultureInfo.InvariantCulture, "{0:00000}", parseInfoAdp.ServiceId));
+                            if (!string.IsNullOrEmpty(_instanceData.SelectedChannelText))
+                            {
+                                sbAdaptionComment.Append(_instanceData.SelectedChannelText);
+                                sbAdaptionComment.Append("\r\n");
+                            }
+
+                            sbAdaptionComment.Append(GetString(Resource.String.vag_adaption_service_id));
+                            sbAdaptionComment.Append(string.Format(CultureInfo.InvariantCulture, " {0:00000}", parseInfoAdp.ServiceId));
                             if (parseInfoAdp.DataTypeEntry.NameDetail != null)
                             {
-                                sbAdaptionComment.Append(" ");
+                                sbAdaptionComment.Append("\r\n");
                                 sbAdaptionComment.Append(parseInfoAdp.DataTypeEntry.NameDetail);
                             }
                         }
@@ -1048,6 +1059,7 @@ namespace BmwDeepObd
         private void UpdateAdaptionText(bool cyclicUpdate = false)
         {
             string adaptionChannelNumber = string.Empty;
+            string adaptionValueStartTitle = GetString(Resource.String.vag_adaption_value_current_title);
             string adaptionValueStart = string.Empty;
             string adaptionValueNew = string.Empty;
             string adaptionValueTest = string.Empty;
@@ -1091,7 +1103,7 @@ namespace BmwDeepObd
                         if (parseInfoAdp != null && _instanceData.AdaptionData != null)
                         {
                             string valueString = parseInfoAdp.DataTypeEntry.ToString(CultureInfo.InvariantCulture, _instanceData.AdaptionData, null,
-                                out string unitText, out object dataValueObject, out byte[] _);
+                                out string unitText, out object dataValueObject, out UInt32? usedBitLength, out byte[] _);
 
                             StringBuilder sb = new StringBuilder();
                             sb.Append(valueString);
@@ -1104,6 +1116,18 @@ namespace BmwDeepObd
                                 }
 
                                 sb.Append(unitText);
+                            }
+
+                            if (usedBitLength.HasValue)
+                            {
+                                if (usedBitLength.Value % 8 != 0)
+                                {
+                                    adaptionValueStartTitle += string.Format(CultureInfo.InvariantCulture, ", {0} Bit", usedBitLength.Value);
+                                }
+                                else
+                                {
+                                    adaptionValueStartTitle += string.Format(CultureInfo.InvariantCulture, ", {0} Byte", usedBitLength.Value / 8);
+                                }
                             }
 
                             adaptionValueStart = sb.ToString();
@@ -1126,7 +1150,7 @@ namespace BmwDeepObd
                                 for (UInt64 testValue = 0;; testValue++)
                                 {
                                     string testValueString = parseInfoAdp.DataTypeEntry.ToString(CultureInfo.InvariantCulture, testData, testValue,
-                                        out string _, out object testValueSet, out byte[] newData, true);
+                                        out string _, out object testValueSet, out UInt32? _, out byte[] newData, true);
                                     bool setDataValid = false;
                                     if (testValueSet is UInt64 testValueSetUint)
                                     {
@@ -1143,10 +1167,7 @@ namespace BmwDeepObd
 
                                     if (!string.IsNullOrEmpty(testValueString))
                                     {
-                                        StringBuilder sbItem = new StringBuilder();
-                                        sbItem.Append(string.Format(CultureInfo.InvariantCulture, "{0}: ", testValue));
-                                        sbItem.Append(testValueString);
-                                        _spinnerVagAdaptionValueNewAdapter.Items.Add(new StringObjType(sbItem.ToString(), testValue));
+                                        _spinnerVagAdaptionValueNewAdapter.Items.Add(new StringObjType(testValueString, testValue));
                                         if (currentValue.HasValue && currentValue == testValue)
                                         {
                                             selection = index;
@@ -1210,6 +1231,7 @@ namespace BmwDeepObd
             _spinnerVagAdaptionChannel.Enabled = !jobRunning;
             _editTextVagAdaptionChannelNumber.Enabled = !jobRunning && !isUdsEcu;
             _editTextVagAdaptionChannelNumber.Text = adaptionChannelNumber;
+            _textViewVagAdaptionValueCurrentTitle.Text = adaptionValueStartTitle;
             _textViewVagAdaptionValueCurrent.Text = adaptionValueStart;
 
             bool enableAdaptionNew = jobRunning && !resetChannel && validData;
@@ -1880,10 +1902,11 @@ namespace BmwDeepObd
                         }
                     }
 
-                    _updateHandler?.Post(() =>
+                    if (IsJobRunning())
                     {
-                        UpdateAdaptionText(true);
-                    });
+                        _jobThread.Join();
+                    }
+                    UpdateAdaptionText(true);
                 });
             });
             _jobThread.Start();
