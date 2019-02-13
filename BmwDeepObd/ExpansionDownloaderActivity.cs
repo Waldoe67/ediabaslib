@@ -19,7 +19,11 @@ using Google.Android.Vending.Expansion.Downloader;
 namespace BmwDeepObd
 {
     [Android.App.Activity(Label = "@string/app_name",
-        MainLauncher = true,
+#if OBB_MODE
+            MainLauncher = true,
+#else
+            MainLauncher = false,
+#endif
         Icon = "@drawable/icon",
         LaunchMode = LaunchMode.SingleTask,
         ConfigurationChanges = ConfigChanges.KeyboardHidden |

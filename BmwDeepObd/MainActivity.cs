@@ -40,7 +40,12 @@ using Mono.CSharp;
 
 namespace BmwDeepObd
 {
-    [Android.App.Activity(Label = "@string/app_name", MainLauncher = false,
+    [Android.App.Activity(Label = "@string/app_name",
+#if OBB_MODE
+            MainLauncher = false,
+#else
+            MainLauncher = true,
+#endif
             LaunchMode = LaunchMode.SingleTask,
             UiOptions=UiOptions.SplitActionBarWhenNarrow,
             ConfigurationChanges = ConfigChanges.KeyboardHidden |
@@ -217,8 +222,9 @@ namespace BmwDeepObd
         private CustomProgressDialog _compileProgress;
         private bool _extractZipCanceled;
         private long _downloadFileSize;
+#if OBB_MODE
         private string _obbFileName;
-#if !OBB_MODE
+#else
         private List<DownloadUrlInfo> _downloadUrlInfoList;
 #endif
         private AlertDialog _startAlertDialog;
@@ -235,17 +241,10 @@ namespace BmwDeepObd
                 switch (ActivityCommon.SelectedManufacturer)
                 {
                     case ActivityCommon.ManufacturerType.Bmw:
-#if OBB_MODE
                         return Path.Combine(ActivityCommon.EcuBaseDir, ActivityCommon.EcuDirNameBmw);
-#else
-                        return EcuDirNameBmw;
-#endif
                 }
-#if OBB_MODE
+
                 return Path.Combine(ActivityCommon.EcuBaseDir, ActivityCommon.EcuDirNameVag);
-#else
-                return EcuDirNameVag;
-#endif
             }
         }
 
@@ -1364,7 +1363,9 @@ namespace BmwDeepObd
             try
             {
                 _currentVersionCode = PackageManager.GetPackageInfo(PackageName, 0).VersionCode;
+#if OBB_MODE
                 _obbFileName = ExpansionDownloaderActivity.GetObbFilename(this);
+#endif
                 ISharedPreferences prefs = Android.App.Application.Context.GetSharedPreferences(SharedAppName, FileCreationMode.Private);
 #if false    // simulate settings reset
                 ISharedPreferencesEditor prefsEdit = prefs.Edit();
@@ -3077,11 +3078,13 @@ namespace BmwDeepObd
 
         private void DownloadFile(string url, string downloadDir, string unzipTargetDir = null, long fileSize = -1)
         {
+#if OBB_MODE
             if (string.IsNullOrEmpty(_obbFileName))
             {
                 _activityCommon.ShowAlert(GetString(Resource.String.download_failed), Resource.String.alert_title_error);
                 return;
             }
+#endif
             try
             {
                 Directory.CreateDirectory(downloadDir);
