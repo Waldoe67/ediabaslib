@@ -357,7 +357,11 @@ namespace BmwDeepObd
                 else if (isBmw && string.Compare(_interfaceName, "FTDI", StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     _interfaceType = ActivityCommon.InterfaceType.Ftdi;
-                }
+                } 
+                else if (isBmw && string.Compare(_interfaceName, "MOCK", StringComparison.OrdinalIgnoreCase) == 0) 
+                {
+                    _interfaceType = ActivityCommon.InterfaceType.Mock;
+                } 
                 else
                 {
                     _interfaceType = ActivityCommon.InterfaceType.Bluetooth;

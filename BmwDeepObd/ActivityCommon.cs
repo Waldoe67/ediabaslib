@@ -171,6 +171,7 @@ namespace BmwDeepObd
             ElmWifi,
             DeepObdWifi,
             Ftdi,
+            Mock
         }
 
         public enum ManufacturerType
@@ -957,6 +958,9 @@ namespace BmwDeepObd
 
                 case InterfaceType.Ftdi:
                     return _context.GetString(Resource.String.select_interface_ftdi);
+
+                case InterfaceType.Mock:
+                    return _context.GetString(Resource.String.select_interface_mock);
             }
             return string.Empty;
         }
@@ -1006,6 +1010,9 @@ namespace BmwDeepObd
 
                 case InterfaceType.Ftdi:
                     return true;
+
+                case InterfaceType.Mock:
+                    return true;
             }
             return false;
         }
@@ -1044,6 +1051,9 @@ namespace BmwDeepObd
                     }
                     return true;
                 }
+
+                case InterfaceType.Mock:
+                    return true;
             }
             return false;
         }
@@ -1690,6 +1700,9 @@ namespace BmwDeepObd
 
                 case InterfaceType.Ftdi:
                     return true;
+
+                case InterfaceType.Mock:
+                    return true;
             }
             return false;
         }
@@ -2128,6 +2141,12 @@ namespace BmwDeepObd
                 interfaceNames.Add(_context.GetString(Resource.String.select_interface_ftdi));
                 interfaceTypes.Add(InterfaceType.Ftdi);
             }
+
+#if DEBUG
+            interfaceNames.Add(_context.GetString(Resource.String.select_interface_mock));
+            interfaceTypes.Add(InterfaceType.Mock);
+#endif
+
             ArrayAdapter<string> adapter = new ArrayAdapter<string>(_context,
                 Android.Resource.Layout.SimpleListItemSingleChoice, interfaceNames.ToArray());
             listView.Adapter = adapter;
@@ -2826,6 +2845,11 @@ namespace BmwDeepObd
                 {
                     edInterfaceObd.ComPort = "DEEPOBDWIFI";
                     connectParameter = new EdCustomWiFiInterface.ConnectParameterType(_maConnectivity);
+                } 
+                else if (SelectedInterface == InterfaceType.Mock) 
+                {
+                    edInterfaceObd.ComPort = "MOCK";
+                    connectParameter = new object();
                 }
                 else
                 {

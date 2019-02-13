@@ -105,6 +105,13 @@
           </xs:documentation>
         </xs:annotation>
       </xs:enumeration>
+      <xs:enumeration value="MOCK">
+        <xs:annotation>
+          <xs:documentation>
+            Mock interface for testing
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 

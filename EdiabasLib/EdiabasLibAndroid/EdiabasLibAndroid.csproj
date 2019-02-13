@@ -64,6 +64,9 @@
     <Compile Include="..\EdiabasLib\EdInterfaceEdic.cs">
       <Link>EdInterfaceEdic.cs</Link>
     </Compile>
+    <Compile Include="..\EdiabasLib\EdMockInterfaceAndroid.cs">
+      <Link>EdMockInterfaceAndroid.cs</Link>
+    </Compile>
     <Compile Include="..\EdiabasLib\IniFile.cs">
       <Link>IniFile.cs</Link>
     </Compile>

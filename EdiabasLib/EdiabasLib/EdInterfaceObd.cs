@@ -1183,6 +1183,27 @@ namespace EdiabasLib
                 InterfaceSendPulseFuncInt = EdCustomWiFiInterface.InterfaceSendPulse;
             }
 #endif
+            else if (ComPortProtected.ToUpper(Culture).StartsWith(EdMockInterface.PortId)) {   // automtatic hook of mock functions
+                EdMockInterface.Ediabas = Ediabas;
+                InterfaceConnectFuncInt = EdMockInterface.InterfaceConnect;
+                InterfaceDisconnectFuncInt = EdMockInterface.InterfaceDisconnect;
+                InterfaceSetConfigFuncInt = EdMockInterface.InterfaceSetConfig;
+                InterfaceSetDtrFuncInt = EdMockInterface.InterfaceSetDtr;
+                InterfaceSetRtsFuncInt = EdMockInterface.InterfaceSetRts;
+                InterfaceGetDsrFuncInt = EdMockInterface.InterfaceGetDsr;
+                InterfaceSetBreakFuncInt = EdMockInterface.InterfaceSetBreak;
+                InterfaceSetInterByteTimeFuncInt = EdMockInterface.InterfaceSetInterByteTime;
+                InterfaceSetCanIdsFuncInt = EdMockInterface.InterfaceSetCanIds;
+                InterfacePurgeInBufferFuncInt = EdMockInterface.InterfacePurgeInBuffer;
+                InterfaceAdapterEchoFuncInt = EdMockInterface.InterfaceAdapterEcho;
+                InterfaceHasPreciseTimeoutFuncInt = EdMockInterface.InterfaceHasPreciseTimeout;
+                InterfaceHasAutoBaudRateFuncInt = EdMockInterface.InterfaceHasAutoBaudRate;
+                InterfaceHasAutoKwp1281FuncInt = EdMockInterface.InterfaceHasAutoKwp1281;
+                InterfaceHasIgnitionStatusFuncInt = EdMockInterface.InterfaceHasIgnitionStatus;
+                InterfaceSendDataFuncInt = EdMockInterface.InterfaceSendData;
+                InterfaceReceiveDataFuncInt = EdMockInterface.InterfaceReceiveData;
+                InterfaceSendPulseFuncInt = EdMockInterface.InterfaceSendPulse;
+            } 
             else
             {
                 InterfaceConnectFuncInt = null;

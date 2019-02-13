@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="apiNET32">
-      <HintPath>$(EDIABAS_PATH)\Bin\apiNET32.dll</HintPath>
+      <HintPath>..\..\apiNET32\bin\Debug\apiNET32.dll</HintPath>
     </Reference>
     <Reference Include="NDesk.Options">
       <HintPath>.\NDesk.Options.dll</HintPath>

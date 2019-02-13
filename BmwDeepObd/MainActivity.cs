@@ -1,4 +1,4 @@
-//#define APP_USB_FILTER
+#define APP_USB_FILTER
 
 using System;
 using System.Collections.Generic;
@@ -1247,6 +1247,11 @@ namespace BmwDeepObd
                         case ActivityCommon.InterfaceType.Ftdi:
                             portName = "FTDI0";
                             connectParameter = new EdFtdiInterface.ConnectParameterType(_activityCommon.UsbManager);
+                            break;
+
+                        case ActivityCommon.InterfaceType.Mock:
+                            portName = "MOCK";
+                            connectParameter = new object();
                             break;
                     }
                     ActivityCommon.EdiabasThread.StartThread(portName, connectParameter, pageInfo, true,
