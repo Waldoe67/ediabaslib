@@ -41,7 +41,7 @@
 \nFeel free to contribute or to report problems.
 \nA detailed documentation could also be found on this web site.
 \n\nChanges in this version:\n</string>
-  <string name="version_last_changes">- VAG coding added\n- Support for long BMW fast telegrams\n- Fixed minor problems</string>
+  <string name="version_last_changes">- VAG adaption added\n- Fixed minor problems</string>
   <string name="app_info_message">Deep OBD for BMW and VAG\nVersion: {0}\nId: {1}</string>
   <string name="vag_mode_info">The VAG mode ist still experimental.\nA <a href='https://github.com/uholeschak/ediabaslib/blob/master/docs/Replacement_firmware_for_ELM327.md'>Deep OBD Adapter</a> with at least firmware version 0.11 is required.\nAt the moment only the protocols KWP2000, KWP1281, TP2.0 and UDS are supported.\nConfigurations have to regenerated for the new VAG mode\n.It\'s possible to select the old VAG mode again in the settings dialog.</string>
 
@@ -414,7 +414,7 @@
   <string name="xml_tool_execute_test_job">Executing job</string>
   <string name="xml_tool_read_test_job_failed">Executing job failed</string>
   <string name="xml_tool_ecu_msg_no_selection">You have selected no data to display.\nFor this select the desired jobs and results first from the list.\nDo you want to abort anyway?</string>
-  <string name="xml_tool_ecu_msg_no_grip_selection">You have activated the graphical display, but not selected any graphical design.\nNothing will be displayed.\nDo you want to abort anyway?</string>
+  <string name="xml_tool_ecu_msg_no_grid_selection">You have activated the graphical display, but not selected any graphical design.\nNothing will be displayed.\nDo you want to abort anyway?</string>
   <string name="xml_tool_result_amount_limit">Depending on the ECU type the amount of results is limited.\nIf you select too many results no data will be transmitted.</string>
 
   <!-- XML ECU Tool Options Menu -->
@@ -464,6 +464,7 @@
   <string name="vag_adaption_importer_number_title">Importer number (dec): {0}-{1}</string>
   <string name="vag_adaption_equipment_number_title">Equipment number (dec): {0}-{1}</string>
   <string name="vag_adaption_operation_title">Operations</string>
+  <string name="vag_adaption_service_id">Service ID:</string>
   <string name="vag_adaption_button_read">Read</string>
   <string name="vag_adaption_button_test">Test</string>
   <string name="vag_adaption_button_store">Store</string>
