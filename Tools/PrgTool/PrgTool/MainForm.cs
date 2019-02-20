@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace PrgTool {
     public partial class MainForm : Form {
+        private List<Ecu> _ecus = new List<Ecu>();
 
         private bool _parsing = false;
         private bool IsParsing {
@@ -16,9 +17,9 @@ namespace PrgTool {
             set {
                 this._parsing = value;
 
-                this.txtPath.ReadOnly = this._parsing;
+                this.lbPaths.Enabled = this._parsing;
                 this.btnFileBrowse.Enabled = !this._parsing;
-                this.btnParse.Enabled = (!this._parsing && !string.IsNullOrEmpty(this.txtPath.Text));
+                this.btnParse.Enabled = (!this._parsing && this.lbPaths.Items.Count > 0);
             }
         }
 
@@ -33,7 +34,7 @@ namespace PrgTool {
         #region UI Events
 
         private void btnFileBrowse_Click(object sender, EventArgs e) {
-            using(OpenFileDialog ofd = new OpenFileDialog()) {
+            using (OpenFileDialog ofd = new OpenFileDialog()) {
                 ofd.CheckFileExists = true;
                 ofd.CheckPathExists = true;
                 ofd.Multiselect = true;
@@ -43,52 +44,48 @@ namespace PrgTool {
 
                 DialogResult result = ofd.ShowDialog();
 
-                if(result == DialogResult.OK && ofd.FileNames.Length > 0) {
-                    this.txtPath.Text = string.Join("; ", ofd.FileNames);
+                if (result == DialogResult.OK && ofd.FileNames.Length > 0) {
+                    this.lbPaths.Items.Clear();
+                    this.lbPaths.Items.AddRange(ofd.FileNames);
                 }
+
+                this.btnParse.Enabled = (this.lbPaths.Items.Count > 0);
             }
         }
-
-        private void txtPath_TextChanged(object sender, EventArgs e) {
-            if(string.IsNullOrWhiteSpace((sender as TextBox).Text)) {
-                this.btnParse.Enabled = false;
-            } else {
-                this.btnParse.Enabled = true;
-            }
-        }
-
+        
         private void btnParse_Click(object sender, EventArgs e) {
             this.IsParsing = true;
 
-            if(string.IsNullOrEmpty(this.txtPath.Text)) {
-                MessageBox.Show("Please selected a path first!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } else if(!this.txtPath.Text.ToLower().EndsWith(".prg")) {
-                MessageBox.Show("Wrong file type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            if (this.lbPaths.Items.Count == 0) {
+                MessageBox.Show("Please selected some .prg files first!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } else {
-                List<Ecu> ecus = new List<Ecu>();
+                this._ecus.Clear();
 
-                foreach(string p in this.txtPath.Text.Split(';')) {
+                foreach (string p in this.lbPaths.Items) {
                     FileInfo fi = new FileInfo(p.Trim());
 
-                    if(fi.Exists) {
-                        using(FileStream fs = fi.OpenRead()) {
+                    if (fi.Exists) {
+                        using (FileStream fs = fi.OpenRead()) {
                             try {
-                                ecus.Add(EcuUtil.parseEcu(fi.Name.Remove(fi.Name.Length - 4), fs));
-                            } catch(Exception ex) {
+                                this._ecus.Add(EcuUtil.parseEcu(fi.Name.Remove(fi.Name.Length - 4), fs));
+                            } catch (Exception ex) {
                                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
-                        }                        
+                        }
                     } else {
                         MessageBox.Show("The selected path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-                
-                this.dgvJobs.DataSource = null;
-                this.dgvArgs.DataSource = null;
-                this.dgvResults.DataSource = null;
 
-                this.dgvEcus.DataSource = ecus.OrderBy(ec => ec.EcuName).ToList();
-                this.dgvEcus.Rows[0].Selected = true;
+                this.clearGrids();
+
+                this._ecus = this._ecus.OrderBy(ec => ec.EcuName).ToList();
+
+                if (this._ecus.Count > 0) {
+                    this.dgvEcus.DataSource = this._ecus;
+                    this.dgvEcus.Rows[0].Selected = true;
+                    this.txtSearch.Enabled = true;
+                }
             }
 
             this.IsParsing = false;
@@ -99,7 +96,7 @@ namespace PrgTool {
 
             int? rowIndex = (dgv.SelectedRows.Count > 0 ? dgv.SelectedRows[0].Index : -1);
 
-            if(rowIndex >= 0 && rowIndex < (sender as DataGridView).Rows.Count) {
+            if (rowIndex >= 0 && rowIndex < (sender as DataGridView).Rows.Count) {
                 Ecu ecu = (dgv.Rows[rowIndex.Value].DataBoundItem as Ecu);
 
                 if (ecu != null) {
@@ -117,20 +114,20 @@ namespace PrgTool {
 
             int? rowIndex = (dgv.SelectedRows.Count > 0 ? dgv.SelectedRows[0].Index : -1);
 
-            if(rowIndex >= 0 && rowIndex < (sender as DataGridView).Rows.Count) {
+            if (rowIndex >= 0 && rowIndex < (sender as DataGridView).Rows.Count) {
                 Job job = (dgv.Rows[rowIndex.Value].DataBoundItem as Job);
 
                 if (job != null) {
                     this.dgvArgs.DataSource = job.Arguments.OrderBy(a => a.ArgName).ToList();
 
                     this.dgvResults.DataSource = job.Results.OrderBy(r => r.ResultName).ToList();
-                    this.dgvResults.ContextMenuStrip = (job.Results.Count > 0 ? ctxResult : null);
+                    this.dgvResults.ContextMenuStrip = (job.Results.Count > 0 ? this.ctxResult : null);
                 }
             }
         }
 
         private void ctxResultAddToBookmarks_Click(object sender, EventArgs e) {
-            foreach(DataGridViewRow r in this.dgvResults.SelectedRows) {
+            foreach (DataGridViewRow r in this.dgvResults.SelectedRows) {
                 BookmarkStore.addBookmark(
                     (this.dgvEcus.SelectedRows[0].DataBoundItem as Ecu),
                     this.dgvJobs.SelectedRows[0].DataBoundItem as Job,
@@ -143,6 +140,89 @@ namespace PrgTool {
             sl.ShowDialog();
         }
 
+        private void txtSearch_TextChanged(object sender, EventArgs e) {
+            this.btnSearch.Enabled = (this.txtSearch.Text.Length > 0);
+        }
+
+        private void txtSearch_KeyUp(object sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.Enter) {
+                this.performSearch();
+            }
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e) {
+            this.performSearch();
+        }
+
+        private void performSearch() {
+            this.clearGrids();
+
+            this.dgvEcus.DataSource = this.filterEcus(this.txtSearch.Text);
+
+            if (this.dgvEcus.Rows.Count > 0) {
+                this.dgvEcus.Rows[0].Selected = true;
+            }
+
+            this.btnClearSearch.Enabled = true;
+        }
+
+        private List<Ecu> filterEcus(string filterString) {
+            List<Ecu> filtered = new List<Ecu>();
+
+            foreach (Ecu ecu in this._ecus) {
+                List<Job> jobs = new List<Job>();
+
+                foreach (Job j in ecu.Jobs) {
+                    IEnumerable<JobResult> results = j.Results.Where(r => r.ResultName.IndexOf(filterString, StringComparison.OrdinalIgnoreCase) > 0
+                                                                || r.ResultComment.IndexOf(filterString, StringComparison.OrdinalIgnoreCase) > 0);
+
+                    if (results.Count() == 0 && (j.JobName.IndexOf(filterString, StringComparison.OrdinalIgnoreCase) > 0
+                                                                || j.JobComment.IndexOf(filterString, StringComparison.OrdinalIgnoreCase) > 0)) {
+                        results = j.Results;   
+                    }
+
+                    if (results.Count() > 0) {
+                        jobs.Add(new Job() {
+                            JobName = j.JobName,
+                            JobComment = j.JobComment,
+                            Results = results.ToList()
+                        });
+                    }
+                }
+
+                if (jobs.Count > 0) {
+                    filtered.Add(new Ecu() {
+                        Author = ecu.Author,
+                        EcuComment = ecu.EcuComment,
+                        EcuDescription = ecu.EcuDescription,
+                        EcuName = ecu.EcuName,
+                        Jobs = jobs,
+                        Origin = ecu.Origin,
+                        Revision = ecu.Revision
+                    });
+                }
+            }
+
+            return filtered;
+        }
+
+        private void btnClearSearch_Click(object sender, EventArgs e) {
+            this.txtSearch.Clear();
+            this.btnClearSearch.Enabled = false;
+
+            this.clearGrids();
+
+            this.dgvEcus.DataSource = this._ecus;
+            this.dgvEcus.Rows[0].Selected = true;
+        }
+
+        private void clearGrids() {
+            this.dgvEcus.DataSource = null;
+            this.dgvJobs.DataSource = null;
+            this.dgvArgs.DataSource = null;
+            this.dgvResults.DataSource = null;
+        }
         #endregion
+
     }
 }
