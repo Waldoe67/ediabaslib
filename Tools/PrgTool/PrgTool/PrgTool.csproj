@@ -46,6 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Ecu.cs" />
+    <Compile Include="Model\Job.cs" />
+    <Compile Include="Model\JobArg.cs" />
+    <Compile Include="Model\JobResult.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -54,6 +58,14 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\BookmarkStore.cs" />
+    <Compile Include="BookmarkForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BookmarkForm.Designer.cs">
+      <DependentUpon>BookmarkForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Util\EcuUtil.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -66,10 +78,14 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="BookmarkForm.resx">
+      <DependentUpon>BookmarkForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\DataSources\MainForm.ECU.datasource" />
     <None Include="Properties\DataSources\MainForm.Job.datasource" />
     <None Include="Properties\DataSources\MainForm.JobArg.datasource" />
     <None Include="Properties\DataSources\MainForm.JobResult.datasource" />
+    <None Include="Properties\DataSources\SaveList.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -89,5 +105,6 @@
       <Name>EdiabasLib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

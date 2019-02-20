@@ -36,40 +36,55 @@
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnParse = new System.Windows.Forms.Button();
             this.lblResult = new System.Windows.Forms.Label();
-            this.wbResult = new System.Windows.Forms.WebBrowser();
-            this.btnSave = new System.Windows.Forms.Button();
+            this.btnShowBookmarks = new System.Windows.Forms.Button();
             this.eCUBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.jobBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.dgvResults = new System.Windows.Forms.DataGridView();
-            this.resultNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.resultTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.resultCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.jobResultBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.jobResultBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.jobArgBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.dgvEcus = new System.Windows.Forms.DataGridView();
             this.ecuNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.originDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.revisionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.authorDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ecuCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgvJobs = new System.Windows.Forms.DataGridView();
             this.jobNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.jobCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvArgs = new System.Windows.Forms.DataGridView();
-            this.jobArgBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.argNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.argTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.argCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvResults = new System.Windows.Forms.DataGridView();
+            this.resultNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.resultTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.resultCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ctxResult = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ctxResultAddToBookmarks = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.eCUBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.jobBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.jobResultBindingSource1)).BeginInit();
-            this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.jobResultBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.jobArgBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvEcus)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+            this.splitContainer3.Panel1.SuspendLayout();
+            this.splitContainer3.Panel2.SuspendLayout();
+            this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvJobs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvArgs)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.jobArgBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).BeginInit();
+            this.ctxResult.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStripMain
@@ -138,106 +153,51 @@
             this.lblResult.TabIndex = 5;
             this.lblResult.Text = "Result:";
             // 
-            // wbResult
+            // btnShowBookmarks
             // 
-            this.wbResult.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.wbResult.Location = new System.Drawing.Point(18, 139);
-            this.wbResult.MinimumSize = new System.Drawing.Size(20, 20);
-            this.wbResult.Name = "wbResult";
-            this.wbResult.Size = new System.Drawing.Size(1009, 718);
-            this.wbResult.TabIndex = 6;
-            this.wbResult.Visible = false;
-            this.wbResult.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.wbResult_DocumentCompleted);
-            // 
-            // btnSave
-            // 
-            this.btnSave.Enabled = false;
-            this.btnSave.Location = new System.Drawing.Point(96, 68);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 7;
-            this.btnSave.Text = "Save Output";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            this.btnShowBookmarks.Location = new System.Drawing.Point(96, 68);
+            this.btnShowBookmarks.Name = "btnShowBookmarks";
+            this.btnShowBookmarks.Size = new System.Drawing.Size(103, 23);
+            this.btnShowBookmarks.TabIndex = 7;
+            this.btnShowBookmarks.Text = "Show Bookmarks";
+            this.btnShowBookmarks.UseVisualStyleBackColor = true;
+            this.btnShowBookmarks.Click += new System.EventHandler(this.btnShowBookmarks_Click);
             // 
             // eCUBindingSource
             // 
-            this.eCUBindingSource.DataSource = typeof(PrgTool.MainForm.ECU);
+            this.eCUBindingSource.DataSource = typeof(PrgTool.Ecu);
             // 
             // jobBindingSource
             // 
-            this.jobBindingSource.DataSource = typeof(PrgTool.MainForm.Job);
+            this.jobBindingSource.DataSource = typeof(PrgTool.Job);
             // 
-            // dgvResults
+            // jobResultBindingSource
             // 
-            this.dgvResults.AllowUserToAddRows = false;
-            this.dgvResults.AllowUserToDeleteRows = false;
-            this.dgvResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.jobResultBindingSource.DataSource = typeof(PrgTool.JobResult);
+            // 
+            // jobArgBindingSource
+            // 
+            this.jobArgBindingSource.DataSource = typeof(PrgTool.JobArg);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgvResults.AutoGenerateColumns = false;
-            this.dgvResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.resultNameDataGridViewTextBoxColumn,
-            this.resultTypeDataGridViewTextBoxColumn,
-            this.resultCommentDataGridViewTextBoxColumn});
-            this.dgvResults.DataSource = this.jobResultBindingSource1;
-            this.dgvResults.Location = new System.Drawing.Point(356, 166);
-            this.dgvResults.Name = "dgvResults";
-            this.dgvResults.ReadOnly = true;
-            this.tableLayoutPanel1.SetRowSpan(this.dgvResults, 2);
-            this.dgvResults.Size = new System.Drawing.Size(650, 212);
-            this.dgvResults.TabIndex = 10;
+            this.splitContainer1.Location = new System.Drawing.Point(18, 138);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // resultNameDataGridViewTextBoxColumn
+            // splitContainer1.Panel1
             // 
-            this.resultNameDataGridViewTextBoxColumn.DataPropertyName = "ResultName";
-            this.resultNameDataGridViewTextBoxColumn.HeaderText = "ResultName";
-            this.resultNameDataGridViewTextBoxColumn.Name = "resultNameDataGridViewTextBoxColumn";
-            this.resultNameDataGridViewTextBoxColumn.ReadOnly = true;
+            this.splitContainer1.Panel1.Controls.Add(this.dgvEcus);
             // 
-            // resultTypeDataGridViewTextBoxColumn
+            // splitContainer1.Panel2
             // 
-            this.resultTypeDataGridViewTextBoxColumn.DataPropertyName = "ResultType";
-            this.resultTypeDataGridViewTextBoxColumn.HeaderText = "ResultType";
-            this.resultTypeDataGridViewTextBoxColumn.Name = "resultTypeDataGridViewTextBoxColumn";
-            this.resultTypeDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // resultCommentDataGridViewTextBoxColumn
-            // 
-            this.resultCommentDataGridViewTextBoxColumn.DataPropertyName = "ResultComment";
-            this.resultCommentDataGridViewTextBoxColumn.HeaderText = "ResultComment";
-            this.resultCommentDataGridViewTextBoxColumn.Name = "resultCommentDataGridViewTextBoxColumn";
-            this.resultCommentDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // jobResultBindingSource1
-            // 
-            this.jobResultBindingSource1.DataSource = typeof(PrgTool.MainForm.JobResult);
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75F));
-            this.tableLayoutPanel1.Controls.Add(this.dgvEcus, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.dgvJobs, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.dgvResults, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.dgvArgs, 0, 2);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(18, 138);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 163F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1009, 719);
-            this.tableLayoutPanel1.TabIndex = 11;
+            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Size = new System.Drawing.Size(1009, 719);
+            this.splitContainer1.SplitterDistance = 125;
+            this.splitContainer1.TabIndex = 12;
             // 
             // dgvEcus
             // 
@@ -251,14 +211,15 @@
             this.revisionDataGridViewTextBoxColumn,
             this.authorDataGridViewTextBoxColumn,
             this.ecuCommentDataGridViewTextBoxColumn});
-            this.tableLayoutPanel1.SetColumnSpan(this.dgvEcus, 2);
             this.dgvEcus.DataSource = this.eCUBindingSource;
-            this.dgvEcus.Dock = System.Windows.Forms.DockStyle.Top;
-            this.dgvEcus.Location = new System.Drawing.Point(3, 3);
+            this.dgvEcus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvEcus.Location = new System.Drawing.Point(0, 0);
+            this.dgvEcus.MultiSelect = false;
             this.dgvEcus.Name = "dgvEcus";
             this.dgvEcus.ReadOnly = true;
-            this.dgvEcus.Size = new System.Drawing.Size(347, 157);
-            this.dgvEcus.TabIndex = 9;
+            this.dgvEcus.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvEcus.Size = new System.Drawing.Size(1009, 125);
+            this.dgvEcus.TabIndex = 10;
             // 
             // ecuNameDataGridViewTextBoxColumn
             // 
@@ -303,13 +264,45 @@
             this.ecuCommentDataGridViewTextBoxColumn.Name = "ecuCommentDataGridViewTextBoxColumn";
             this.ecuCommentDataGridViewTextBoxColumn.ReadOnly = true;
             // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.splitContainer3);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.dgvResults);
+            this.splitContainer2.Size = new System.Drawing.Size(1009, 590);
+            this.splitContainer2.SplitterDistance = 344;
+            this.splitContainer2.TabIndex = 0;
+            // 
+            // splitContainer3
+            // 
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer3.Name = "splitContainer3";
+            this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer3.Panel1
+            // 
+            this.splitContainer3.Panel1.Controls.Add(this.dgvJobs);
+            // 
+            // splitContainer3.Panel2
+            // 
+            this.splitContainer3.Panel2.Controls.Add(this.dgvArgs);
+            this.splitContainer3.Size = new System.Drawing.Size(344, 590);
+            this.splitContainer3.SplitterDistance = 415;
+            this.splitContainer3.TabIndex = 0;
+            // 
             // dgvJobs
             // 
             this.dgvJobs.AllowUserToAddRows = false;
             this.dgvJobs.AllowUserToDeleteRows = false;
-            this.dgvJobs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvJobs.AutoGenerateColumns = false;
             this.dgvJobs.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvJobs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -317,11 +310,14 @@
             this.jobNameDataGridViewTextBoxColumn,
             this.jobCommentDataGridViewTextBoxColumn});
             this.dgvJobs.DataSource = this.jobBindingSource;
-            this.dgvJobs.Location = new System.Drawing.Point(3, 166);
+            this.dgvJobs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvJobs.Location = new System.Drawing.Point(0, 0);
+            this.dgvJobs.MultiSelect = false;
             this.dgvJobs.Name = "dgvJobs";
             this.dgvJobs.ReadOnly = true;
-            this.dgvJobs.Size = new System.Drawing.Size(347, 212);
-            this.dgvJobs.TabIndex = 10;
+            this.dgvJobs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvJobs.Size = new System.Drawing.Size(344, 415);
+            this.dgvJobs.TabIndex = 11;
             // 
             // jobNameDataGridViewTextBoxColumn
             // 
@@ -341,9 +337,6 @@
             // 
             this.dgvArgs.AllowUserToAddRows = false;
             this.dgvArgs.AllowUserToDeleteRows = false;
-            this.dgvArgs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvArgs.AutoGenerateColumns = false;
             this.dgvArgs.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvArgs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -352,15 +345,14 @@
             this.argTypeDataGridViewTextBoxColumn,
             this.argCommentDataGridViewTextBoxColumn});
             this.dgvArgs.DataSource = this.jobArgBindingSource;
-            this.dgvArgs.Location = new System.Drawing.Point(3, 384);
+            this.dgvArgs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvArgs.Location = new System.Drawing.Point(0, 0);
+            this.dgvArgs.MultiSelect = false;
             this.dgvArgs.Name = "dgvArgs";
             this.dgvArgs.ReadOnly = true;
-            this.dgvArgs.Size = new System.Drawing.Size(347, 335);
-            this.dgvArgs.TabIndex = 11;
-            // 
-            // jobArgBindingSource
-            // 
-            this.jobArgBindingSource.DataSource = typeof(PrgTool.MainForm.JobArg);
+            this.dgvArgs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvArgs.Size = new System.Drawing.Size(344, 171);
+            this.dgvArgs.TabIndex = 12;
             // 
             // argNameDataGridViewTextBoxColumn
             // 
@@ -383,14 +375,67 @@
             this.argCommentDataGridViewTextBoxColumn.Name = "argCommentDataGridViewTextBoxColumn";
             this.argCommentDataGridViewTextBoxColumn.ReadOnly = true;
             // 
+            // dgvResults
+            // 
+            this.dgvResults.AllowUserToAddRows = false;
+            this.dgvResults.AllowUserToDeleteRows = false;
+            this.dgvResults.AutoGenerateColumns = false;
+            this.dgvResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.resultNameDataGridViewTextBoxColumn,
+            this.resultTypeDataGridViewTextBoxColumn,
+            this.resultCommentDataGridViewTextBoxColumn});
+            this.dgvResults.DataSource = this.jobResultBindingSource;
+            this.dgvResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvResults.Location = new System.Drawing.Point(0, 0);
+            this.dgvResults.Name = "dgvResults";
+            this.dgvResults.ReadOnly = true;
+            this.dgvResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvResults.Size = new System.Drawing.Size(661, 590);
+            this.dgvResults.TabIndex = 11;
+            // 
+            // resultNameDataGridViewTextBoxColumn
+            // 
+            this.resultNameDataGridViewTextBoxColumn.DataPropertyName = "ResultName";
+            this.resultNameDataGridViewTextBoxColumn.HeaderText = "ResultName";
+            this.resultNameDataGridViewTextBoxColumn.Name = "resultNameDataGridViewTextBoxColumn";
+            this.resultNameDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // resultTypeDataGridViewTextBoxColumn
+            // 
+            this.resultTypeDataGridViewTextBoxColumn.DataPropertyName = "ResultType";
+            this.resultTypeDataGridViewTextBoxColumn.HeaderText = "ResultType";
+            this.resultTypeDataGridViewTextBoxColumn.Name = "resultTypeDataGridViewTextBoxColumn";
+            this.resultTypeDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // resultCommentDataGridViewTextBoxColumn
+            // 
+            this.resultCommentDataGridViewTextBoxColumn.DataPropertyName = "ResultComment";
+            this.resultCommentDataGridViewTextBoxColumn.HeaderText = "ResultComment";
+            this.resultCommentDataGridViewTextBoxColumn.Name = "resultCommentDataGridViewTextBoxColumn";
+            this.resultCommentDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // ctxResult
+            // 
+            this.ctxResult.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxResultAddToBookmarks});
+            this.ctxResult.Name = "ctxResult";
+            this.ctxResult.Size = new System.Drawing.Size(173, 26);
+            // 
+            // ctxResultAddToBookmarks
+            // 
+            this.ctxResultAddToBookmarks.Name = "ctxResultAddToBookmarks";
+            this.ctxResultAddToBookmarks.Size = new System.Drawing.Size(172, 22);
+            this.ctxResultAddToBookmarks.Text = "Add to Bookmarks";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1039, 869);
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.wbResult);
+            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.btnShowBookmarks);
             this.Controls.Add(this.lblResult);
             this.Controls.Add(this.btnParse);
             this.Controls.Add(this.txtPath);
@@ -405,13 +450,25 @@
             this.menuStripMain.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.eCUBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.jobBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.jobResultBindingSource1)).EndInit();
-            this.tableLayoutPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.jobResultBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.jobArgBindingSource)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvEcus)).EndInit();
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
+            this.splitContainer3.Panel1.ResumeLayout(false);
+            this.splitContainer3.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+            this.splitContainer3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvJobs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvArgs)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.jobArgBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).EndInit();
+            this.ctxResult.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -426,22 +483,20 @@
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnParse;
         private System.Windows.Forms.Label lblResult;
-        private System.Windows.Forms.WebBrowser wbResult;
-        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnShowBookmarks;
         private System.Windows.Forms.BindingSource eCUBindingSource;
         private System.Windows.Forms.BindingSource jobBindingSource;
-        private System.Windows.Forms.DataGridView dgvResults;
-        private System.Windows.Forms.DataGridViewTextBoxColumn resultNameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn resultTypeDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn resultCommentDataGridViewTextBoxColumn;
-        private System.Windows.Forms.BindingSource jobResultBindingSource1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.BindingSource jobResultBindingSource;
+        private System.Windows.Forms.BindingSource jobArgBindingSource;
+        private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridView dgvEcus;
         private System.Windows.Forms.DataGridViewTextBoxColumn ecuNameDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn originDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn revisionDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn authorDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn ecuCommentDataGridViewTextBoxColumn;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.DataGridView dgvJobs;
         private System.Windows.Forms.DataGridViewTextBoxColumn jobNameDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn jobCommentDataGridViewTextBoxColumn;
@@ -449,7 +504,12 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn argNameDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn argTypeDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn argCommentDataGridViewTextBoxColumn;
-        private System.Windows.Forms.BindingSource jobArgBindingSource;
+        private System.Windows.Forms.DataGridView dgvResults;
+        private System.Windows.Forms.DataGridViewTextBoxColumn resultNameDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn resultTypeDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn resultCommentDataGridViewTextBoxColumn;
+        private System.Windows.Forms.ContextMenuStrip ctxResult;
+        private System.Windows.Forms.ToolStripMenuItem ctxResultAddToBookmarks;
     }
 }
 
