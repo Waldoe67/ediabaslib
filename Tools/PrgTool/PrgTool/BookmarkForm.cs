@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace PrgTool {
@@ -15,7 +16,6 @@ namespace PrgTool {
                 "Result Name",
                 "Result Type",
                 "Result Comment"
-
             };
 
             this.dgvBookmarks.ColumnCount = columns.Length;
@@ -24,15 +24,23 @@ namespace PrgTool {
                 this.dgvBookmarks.Columns[i].Name = columns[i];
             }
 
-            foreach(KeyValuePair<string, BookmarkStore.BookmarkEntry> kvs in BookmarkStore.GetAllBookmarks()) {
-                foreach(KeyValuePair<string, BookmarkStore.BookmarkJobEntry> kvj in kvs.Value.Jobs) {
-                    foreach(JobResult r in kvj.Value.Results) {
+            Dictionary<string, BookmarkStore.BookmarkEcuEntry> bookmarks = BookmarkStore.GetAllBookmarks();
+
+            foreach(string ekey in bookmarks.Keys.OrderBy(s => s)) {
+                BookmarkStore.BookmarkEcuEntry ecu = bookmarks[ekey];
+
+                Dictionary<string, BookmarkStore.BookmarkJobEntry> jobs = ecu.Jobs;
+
+                foreach(string jkey in jobs.Keys.OrderBy(s => s)) {
+                    BookmarkStore.BookmarkJobEntry job = jobs[jkey];
+
+                    foreach(JobResult r in job.Results.OrderBy(jr => jr.ResultName)) {
                         this.dgvBookmarks.Rows.Add(
                             new string[] {
-                                kvs.Key,
-                                kvs.Value.EcuDescription,
-                                kvj.Key,
-                                kvj.Value.Jobcomment,
+                                ekey,
+                                ecu.EcuDescription,
+                                jkey,
+                                job.Jobcomment,
                                 r.ResultName,
                                 r.ResultType,
                                 r.ResultComment

@@ -5,7 +5,7 @@ using System.IO;
 namespace PrgTool {
 
     public static class BookmarkStore {
-        public class BookmarkEntry {
+        public class BookmarkEcuEntry {
             public string EcuDescription { get; set; }
 
             public Dictionary<string, BookmarkJobEntry> Jobs { get; set; }
@@ -19,26 +19,25 @@ namespace PrgTool {
         }
 
         private static string _bookmarkFilePath = Path.Combine(System.Environment.CurrentDirectory, "bookmarks.txt");
-        private static Dictionary<string, BookmarkEntry> _bookmarks = new Dictionary<string, BookmarkEntry>();
+        private static Dictionary<string, BookmarkEcuEntry> _bookmarks = new Dictionary<string, BookmarkEcuEntry>();
 
         static BookmarkStore() {
             if (File.Exists(_bookmarkFilePath)) {
                 try {
-                     _bookmarks = JsonConvert.DeserializeObject<Dictionary<string, BookmarkEntry>>(File.ReadAllText(_bookmarkFilePath));
+                     _bookmarks = JsonConvert.DeserializeObject<Dictionary<string, BookmarkEcuEntry>>(File.ReadAllText(_bookmarkFilePath));
                 } catch {
                     /* Ignore */
                 }
             }
 
             if (_bookmarks == null) {
-                _bookmarks = new Dictionary<string, BookmarkEntry>();
+                _bookmarks = new Dictionary<string, BookmarkEcuEntry>();
             }
         }
 
-
         public static void addBookmark(Ecu ecu, Job job, JobResult result) {
             if (!_bookmarks.ContainsKey(ecu.EcuName)) {
-                _bookmarks.Add(ecu.EcuName, new BookmarkEntry() {
+                _bookmarks.Add(ecu.EcuName, new BookmarkEcuEntry() {
                     EcuDescription = ecu.EcuDescription,
                     Jobs = new Dictionary<string, BookmarkJobEntry>()
                 });
@@ -74,8 +73,8 @@ namespace PrgTool {
             }
         }
 
-        public static Dictionary<string, BookmarkEntry> GetAllBookmarks() {
-            return new Dictionary<string, BookmarkEntry>(_bookmarks);
+        public static Dictionary<string, BookmarkEcuEntry> GetAllBookmarks() {
+            return new Dictionary<string, BookmarkEcuEntry>(_bookmarks);
         }
 
         private static void SaveBookmarks() {

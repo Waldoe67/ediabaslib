@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace PrgTool {
@@ -23,7 +25,6 @@ namespace PrgTool {
         public MainForm() {
             this.InitializeComponent();
 
-            //this.dgvEcus.CellClick += this.dgvEcus_CellClick;
             this.dgvEcus.SelectionChanged += this.dgvEcus_SelectionChanged;
             this.dgvJobs.SelectionChanged += this.dgvJobs_SelectionChanged;
             this.ctxResultAddToBookmarks.Click += this.ctxResultAddToBookmarks_Click;
@@ -64,7 +65,7 @@ namespace PrgTool {
             } else if(!this.txtPath.Text.ToLower().EndsWith(".prg")) {
                 MessageBox.Show("Wrong file type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } else {
-                BindingSource src = new BindingSource();
+                List<Ecu> ecus = new List<Ecu>();
 
                 foreach(string p in this.txtPath.Text.Split(';')) {
                     FileInfo fi = new FileInfo(p.Trim());
@@ -72,7 +73,7 @@ namespace PrgTool {
                     if(fi.Exists) {
                         using(FileStream fs = fi.OpenRead()) {
                             try {
-                                src.Add(EcuUtil.parseEcu(fi.Name.Remove(fi.Name.Length - 4), fs));
+                                ecus.Add(EcuUtil.parseEcu(fi.Name.Remove(fi.Name.Length - 4), fs));
                             } catch(Exception ex) {
                                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
@@ -81,12 +82,12 @@ namespace PrgTool {
                         MessageBox.Show("The selected path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-
+                
                 this.dgvJobs.DataSource = null;
                 this.dgvArgs.DataSource = null;
                 this.dgvResults.DataSource = null;
 
-                this.dgvEcus.DataSource = src;
+                this.dgvEcus.DataSource = ecus.OrderBy(ec => ec.EcuName).ToList();
                 this.dgvEcus.Rows[0].Selected = true;
             }
 
@@ -102,16 +103,10 @@ namespace PrgTool {
                 Ecu ecu = (dgv.Rows[rowIndex.Value].DataBoundItem as Ecu);
 
                 if (ecu != null) {
-                    BindingSource src = new BindingSource();
-
-                    foreach (Job j in ecu.Jobs) {
-                        src.Add(j);
-                    }
-
                     this.dgvArgs.DataSource = null;
                     this.dgvResults.DataSource = null;
 
-                    this.dgvJobs.DataSource = src;
+                    this.dgvJobs.DataSource = ecu.Jobs.OrderBy(j => j.JobName).ToList();
                     this.dgvJobs.Rows[0].Selected = true;
                 }
             }
@@ -126,23 +121,10 @@ namespace PrgTool {
                 Job job = (dgv.Rows[rowIndex.Value].DataBoundItem as Job);
 
                 if (job != null) {
-                    BindingSource src = new BindingSource();
+                    this.dgvArgs.DataSource = job.Arguments.OrderBy(a => a.ArgName).ToList();
 
-                    foreach (JobArg a in job.Arguments) {
-                        src.Add(a);
-                    }
-
-                    this.dgvArgs.DataSource = src;
-
-                    src = new BindingSource();
-
-                    foreach (JobResult r in job.Results) {
-                        src.Add(r);
-                    }
-
-                    this.dgvResults.DataSource = src;
-
-                    this.dgvResults.ContextMenuStrip = (src.Count > 0 ? ctxResult : null);                    
+                    this.dgvResults.DataSource = job.Results.OrderBy(r => r.ResultName).ToList();
+                    this.dgvResults.ContextMenuStrip = (job.Results.Count > 0 ? ctxResult : null);
                 }
             }
         }
