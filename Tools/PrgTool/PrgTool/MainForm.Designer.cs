@@ -39,7 +39,6 @@
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.dgvEcus = new System.Windows.Forms.DataGridView();
-            this.EcuDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgvJobs = new System.Windows.Forms.DataGridView();
@@ -49,23 +48,24 @@
             this.ctxResultAddToBookmarks = new System.Windows.Forms.ToolStripMenuItem();
             this.gbSearch = new System.Windows.Forms.GroupBox();
             this.gbPath = new System.Windows.Forms.GroupBox();
+            this.ecuBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.jobBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.jobArgBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.jobResultBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.ecuNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EcuDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.originDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.revisionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.authorDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ecuCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ecuBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.jobNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.jobCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.jobBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.argNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.argTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.argCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.jobArgBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.resultNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.resultTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.resultCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.jobResultBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.argNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.argTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.argCommentDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer0)).BeginInit();
             this.splitContainer0.Panel1.SuspendLayout();
             this.splitContainer0.Panel2.SuspendLayout();
@@ -235,15 +235,6 @@
             this.dgvEcus.Size = new System.Drawing.Size(980, 113);
             this.dgvEcus.TabIndex = 10;
             // 
-            // EcuDescription
-            // 
-            this.EcuDescription.DataPropertyName = "EcuDescription";
-            this.EcuDescription.FillWeight = 30F;
-            this.EcuDescription.HeaderText = "EcuDescription";
-            this.EcuDescription.Name = "EcuDescription";
-            this.EcuDescription.ReadOnly = true;
-            this.EcuDescription.Width = 247;
-            // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -379,14 +370,39 @@
             this.gbPath.TabStop = false;
             this.gbPath.Text = "Select file(s);";
             // 
+            // ecuBindingSource
+            // 
+            this.ecuBindingSource.DataSource = typeof(PrgTool.Ecu);
+            // 
+            // jobBindingSource
+            // 
+            this.jobBindingSource.DataSource = typeof(PrgTool.Job);
+            // 
+            // jobArgBindingSource
+            // 
+            this.jobArgBindingSource.DataSource = typeof(PrgTool.JobArg);
+            // 
+            // jobResultBindingSource
+            // 
+            this.jobResultBindingSource.DataSource = typeof(PrgTool.JobResult);
+            // 
             // ecuNameDataGridViewTextBoxColumn
             // 
             this.ecuNameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.ecuNameDataGridViewTextBoxColumn.DataPropertyName = "EcuName";
             this.ecuNameDataGridViewTextBoxColumn.FillWeight = 15F;
-            this.ecuNameDataGridViewTextBoxColumn.HeaderText = "EcuName";
+            this.ecuNameDataGridViewTextBoxColumn.HeaderText = "ECU Name";
             this.ecuNameDataGridViewTextBoxColumn.Name = "ecuNameDataGridViewTextBoxColumn";
             this.ecuNameDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // EcuDescription
+            // 
+            this.EcuDescription.DataPropertyName = "EcuDescription";
+            this.EcuDescription.FillWeight = 30F;
+            this.EcuDescription.HeaderText = "Description";
+            this.EcuDescription.Name = "EcuDescription";
+            this.EcuDescription.ReadOnly = true;
+            this.EcuDescription.Width = 247;
             // 
             // originDataGridViewTextBoxColumn
             // 
@@ -420,81 +436,68 @@
             this.ecuCommentDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.ecuCommentDataGridViewTextBoxColumn.DataPropertyName = "EcuComment";
             this.ecuCommentDataGridViewTextBoxColumn.FillWeight = 15F;
-            this.ecuCommentDataGridViewTextBoxColumn.HeaderText = "EcuComment";
+            this.ecuCommentDataGridViewTextBoxColumn.HeaderText = "Comment";
             this.ecuCommentDataGridViewTextBoxColumn.Name = "ecuCommentDataGridViewTextBoxColumn";
             this.ecuCommentDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // ecuBindingSource
-            // 
-            this.ecuBindingSource.DataSource = typeof(PrgTool.Ecu);
             // 
             // jobNameDataGridViewTextBoxColumn
             // 
             this.jobNameDataGridViewTextBoxColumn.DataPropertyName = "JobName";
-            this.jobNameDataGridViewTextBoxColumn.HeaderText = "JobName";
+            this.jobNameDataGridViewTextBoxColumn.HeaderText = "Job Name";
             this.jobNameDataGridViewTextBoxColumn.Name = "jobNameDataGridViewTextBoxColumn";
             this.jobNameDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // jobCommentDataGridViewTextBoxColumn
             // 
             this.jobCommentDataGridViewTextBoxColumn.DataPropertyName = "JobComment";
-            this.jobCommentDataGridViewTextBoxColumn.HeaderText = "JobComment";
+            this.jobCommentDataGridViewTextBoxColumn.HeaderText = "Comment";
             this.jobCommentDataGridViewTextBoxColumn.Name = "jobCommentDataGridViewTextBoxColumn";
             this.jobCommentDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // jobBindingSource
-            // 
-            this.jobBindingSource.DataSource = typeof(PrgTool.Job);
-            // 
-            // argNameDataGridViewTextBoxColumn
-            // 
-            this.argNameDataGridViewTextBoxColumn.DataPropertyName = "ArgName";
-            this.argNameDataGridViewTextBoxColumn.HeaderText = "ArgName";
-            this.argNameDataGridViewTextBoxColumn.Name = "argNameDataGridViewTextBoxColumn";
-            this.argNameDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // argTypeDataGridViewTextBoxColumn
-            // 
-            this.argTypeDataGridViewTextBoxColumn.DataPropertyName = "ArgType";
-            this.argTypeDataGridViewTextBoxColumn.HeaderText = "ArgType";
-            this.argTypeDataGridViewTextBoxColumn.Name = "argTypeDataGridViewTextBoxColumn";
-            this.argTypeDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // argCommentDataGridViewTextBoxColumn
-            // 
-            this.argCommentDataGridViewTextBoxColumn.DataPropertyName = "ArgComment";
-            this.argCommentDataGridViewTextBoxColumn.HeaderText = "ArgComment";
-            this.argCommentDataGridViewTextBoxColumn.Name = "argCommentDataGridViewTextBoxColumn";
-            this.argCommentDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // jobArgBindingSource
-            // 
-            this.jobArgBindingSource.DataSource = typeof(PrgTool.JobArg);
             // 
             // resultNameDataGridViewTextBoxColumn
             // 
             this.resultNameDataGridViewTextBoxColumn.DataPropertyName = "ResultName";
-            this.resultNameDataGridViewTextBoxColumn.HeaderText = "ResultName";
+            this.resultNameDataGridViewTextBoxColumn.HeaderText = "Result Name";
             this.resultNameDataGridViewTextBoxColumn.Name = "resultNameDataGridViewTextBoxColumn";
             this.resultNameDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // resultTypeDataGridViewTextBoxColumn
             // 
             this.resultTypeDataGridViewTextBoxColumn.DataPropertyName = "ResultType";
-            this.resultTypeDataGridViewTextBoxColumn.HeaderText = "ResultType";
+            this.resultTypeDataGridViewTextBoxColumn.HeaderText = "Type";
             this.resultTypeDataGridViewTextBoxColumn.Name = "resultTypeDataGridViewTextBoxColumn";
             this.resultTypeDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // resultCommentDataGridViewTextBoxColumn
             // 
             this.resultCommentDataGridViewTextBoxColumn.DataPropertyName = "ResultComment";
-            this.resultCommentDataGridViewTextBoxColumn.HeaderText = "ResultComment";
+            this.resultCommentDataGridViewTextBoxColumn.HeaderText = "Comment";
             this.resultCommentDataGridViewTextBoxColumn.Name = "resultCommentDataGridViewTextBoxColumn";
             this.resultCommentDataGridViewTextBoxColumn.ReadOnly = true;
             // 
-            // jobResultBindingSource
+            // argNameDataGridViewTextBoxColumn
             // 
-            this.jobResultBindingSource.DataSource = typeof(PrgTool.JobResult);
+            this.argNameDataGridViewTextBoxColumn.DataPropertyName = "ArgName";
+            this.argNameDataGridViewTextBoxColumn.FillWeight = 40F;
+            this.argNameDataGridViewTextBoxColumn.HeaderText = "Argument Name";
+            this.argNameDataGridViewTextBoxColumn.Name = "argNameDataGridViewTextBoxColumn";
+            this.argNameDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // argTypeDataGridViewTextBoxColumn
+            // 
+            this.argTypeDataGridViewTextBoxColumn.DataPropertyName = "ArgType";
+            this.argTypeDataGridViewTextBoxColumn.FillWeight = 20F;
+            this.argTypeDataGridViewTextBoxColumn.HeaderText = "Type";
+            this.argTypeDataGridViewTextBoxColumn.Name = "argTypeDataGridViewTextBoxColumn";
+            this.argTypeDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // argCommentDataGridViewTextBoxColumn
+            // 
+            this.argCommentDataGridViewTextBoxColumn.DataPropertyName = "ArgComment";
+            this.argCommentDataGridViewTextBoxColumn.FillWeight = 40F;
+            this.argCommentDataGridViewTextBoxColumn.HeaderText = "Comment";
+            this.argCommentDataGridViewTextBoxColumn.Name = "argCommentDataGridViewTextBoxColumn";
+            this.argCommentDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // MainForm
             // 
@@ -552,30 +555,30 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.DataGridView dgvJobs;
-        private System.Windows.Forms.DataGridViewTextBoxColumn jobNameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn jobCommentDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridView dgvArgs;
-        private System.Windows.Forms.DataGridViewTextBoxColumn argNameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn argTypeDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn argCommentDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridView dgvResults;
-        private System.Windows.Forms.DataGridViewTextBoxColumn resultNameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn resultTypeDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn resultCommentDataGridViewTextBoxColumn;
         private System.Windows.Forms.ContextMenuStrip ctxResult;
         private System.Windows.Forms.ToolStripMenuItem ctxResultAddToBookmarks;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ecuNameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EcuDescription;
-        private System.Windows.Forms.DataGridViewTextBoxColumn originDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn revisionDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn authorDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ecuCommentDataGridViewTextBoxColumn;
         private System.Windows.Forms.Button btnClearSearch;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.ListBox lbPaths;
         private System.Windows.Forms.GroupBox gbPath;
         private System.Windows.Forms.GroupBox gbSearch;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ecuNameDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EcuDescription;
+        private System.Windows.Forms.DataGridViewTextBoxColumn originDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn revisionDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn authorDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ecuCommentDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn jobNameDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn jobCommentDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn argNameDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn argTypeDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn argCommentDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn resultNameDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn resultTypeDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn resultCommentDataGridViewTextBoxColumn;
     }
 }
 
