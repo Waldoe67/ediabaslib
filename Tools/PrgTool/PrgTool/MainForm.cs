@@ -23,8 +23,9 @@ namespace PrgTool {
         public MainForm() {
             this.InitializeComponent();
 
-            this.dgvEcus.CellClick += this.dgvEcus_CellClick;
-            this.dgvJobs.CellClick += this.dgvJobs_CellClick;
+            //this.dgvEcus.CellClick += this.dgvEcus_CellClick;
+            this.dgvEcus.SelectionChanged += this.dgvEcus_SelectionChanged;
+            this.dgvJobs.SelectionChanged += this.dgvJobs_SelectionChanged;
             this.ctxResultAddToBookmarks.Click += this.ctxResultAddToBookmarks_Click;
         }
 
@@ -75,21 +76,30 @@ namespace PrgTool {
                             } catch(Exception ex) {
                                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
-                        }
-                        
+                        }                        
                     } else {
                         MessageBox.Show("The selected path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
 
+                this.dgvJobs.DataSource = null;
+                this.dgvArgs.DataSource = null;
+                this.dgvResults.DataSource = null;
+
                 this.dgvEcus.DataSource = src;
+                this.dgvEcus.Rows[0].Selected = true;
             }
+
             this.IsParsing = false;
         }
 
-        private void dgvEcus_CellClick(object sender, DataGridViewCellEventArgs e) {
-            if (e.RowIndex >= 0 && e.RowIndex < (sender as DataGridView).Rows.Count) {
-                Ecu ecu = ((sender as DataGridView).Rows[e.RowIndex].DataBoundItem as Ecu);
+        private void dgvEcus_SelectionChanged(object sender, EventArgs e) {
+            DataGridView dgv = (sender as DataGridView);
+
+            int? rowIndex = (dgv.SelectedRows.Count > 0 ? dgv.SelectedRows[0].Index : -1);
+
+            if(rowIndex >= 0 && rowIndex < (sender as DataGridView).Rows.Count) {
+                Ecu ecu = (dgv.Rows[rowIndex.Value].DataBoundItem as Ecu);
 
                 if (ecu != null) {
                     BindingSource src = new BindingSource();
@@ -98,15 +108,22 @@ namespace PrgTool {
                         src.Add(j);
                     }
 
+                    this.dgvArgs.DataSource = null;
+                    this.dgvResults.DataSource = null;
+
                     this.dgvJobs.DataSource = src;
+                    this.dgvJobs.Rows[0].Selected = true;
                 }
             }
         }
 
-        private void dgvJobs_CellClick(object sender, DataGridViewCellEventArgs e) {
-            if (e.RowIndex >= 0 && e.RowIndex < (sender as DataGridView).Rows.Count) {
+        private void dgvJobs_SelectionChanged(object sender, EventArgs e) {
+            DataGridView dgv = (sender as DataGridView);
 
-                Job job = ((sender as DataGridView).Rows[e.RowIndex].DataBoundItem as Job);
+            int? rowIndex = (dgv.SelectedRows.Count > 0 ? dgv.SelectedRows[0].Index : -1);
+
+            if(rowIndex >= 0 && rowIndex < (sender as DataGridView).Rows.Count) {
+                Job job = (dgv.Rows[rowIndex.Value].DataBoundItem as Job);
 
                 if (job != null) {
                     BindingSource src = new BindingSource();
@@ -133,7 +150,7 @@ namespace PrgTool {
         private void ctxResultAddToBookmarks_Click(object sender, EventArgs e) {
             foreach(DataGridViewRow r in this.dgvResults.SelectedRows) {
                 BookmarkStore.addBookmark(
-                    (this.dgvEcus.SelectedRows[0].DataBoundItem as Ecu).EcuName,
+                    (this.dgvEcus.SelectedRows[0].DataBoundItem as Ecu),
                     this.dgvJobs.SelectedRows[0].DataBoundItem as Job,
                     r.DataBoundItem as JobResult);
             }

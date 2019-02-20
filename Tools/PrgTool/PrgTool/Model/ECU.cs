@@ -9,7 +9,7 @@ namespace PrgTool {
         public const string KeyEcuComment = "ECUCOMMENT";
 
         public string EcuName { get; set; }
-        public string EcuLongName { get; set; }
+        public string EcuDescription { get; set; }
         public string Origin { get; set; }
         public string Revision { get; set; }
         public string Author { get; set; }

@@ -19,7 +19,7 @@ namespace PrgTool {
             foreach (string[] split in globalComments.Select(s => s.Split(':'))) {
                 switch (split[0].ToUpper()) {
                     case Ecu.KeyEcu:
-                        ecu.EcuLongName = split[1];
+                        ecu.EcuDescription = split[1];
                         break;
 
                     case Ecu.KeyEcuOrigin:

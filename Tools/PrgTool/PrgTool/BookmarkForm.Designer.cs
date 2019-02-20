@@ -46,6 +46,7 @@
             // 
             // btnExport
             // 
+            this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnExport.Enabled = false;
             this.btnExport.Location = new System.Drawing.Point(12, 682);
             this.btnExport.Name = "btnExport";
@@ -53,6 +54,7 @@
             this.btnExport.TabIndex = 1;
             this.btnExport.Text = "Export Bookmarks";
             this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // BookmarkForm
             // 

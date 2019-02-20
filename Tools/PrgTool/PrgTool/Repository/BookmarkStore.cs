@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
 
 namespace PrgTool {
 
     public static class BookmarkStore {
         public class BookmarkEntry {
-            public string EcuName { get; set; }
+            public string EcuDescription { get; set; }
 
             public Dictionary<string, BookmarkJobEntry> Jobs { get; set; }
         }
@@ -16,25 +18,44 @@ namespace PrgTool {
             public HashSet<JobResult> Results { get; set; }
         }
 
-        private static readonly Dictionary<string, BookmarkEntry> _bookmarks = new Dictionary<string, BookmarkEntry>();
+        private static string _bookmarkFilePath = Path.Combine(System.Environment.CurrentDirectory, "bookmarks.txt");
+        private static Dictionary<string, BookmarkEntry> _bookmarks = new Dictionary<string, BookmarkEntry>();
 
-        public static void addBookmark(string ecuName, Job job, JobResult result) {
-            if (!_bookmarks.ContainsKey(ecuName)) {
-                _bookmarks.Add(ecuName, new BookmarkEntry() {
-                    EcuName = ecuName,
+        static BookmarkStore() {
+            if (File.Exists(_bookmarkFilePath)) {
+                try {
+                     _bookmarks = JsonConvert.DeserializeObject<Dictionary<string, BookmarkEntry>>(File.ReadAllText(_bookmarkFilePath));
+                } catch {
+                    /* Ignore */
+                }
+            }
+
+            if (_bookmarks == null) {
+                _bookmarks = new Dictionary<string, BookmarkEntry>();
+            }
+        }
+
+
+        public static void addBookmark(Ecu ecu, Job job, JobResult result) {
+            if (!_bookmarks.ContainsKey(ecu.EcuName)) {
+                _bookmarks.Add(ecu.EcuName, new BookmarkEntry() {
+                    EcuDescription = ecu.EcuDescription,
                     Jobs = new Dictionary<string, BookmarkJobEntry>()
                 });
             }
 
-            if (!_bookmarks[ecuName].Jobs.ContainsKey(job.JobName)) {
-                _bookmarks[ecuName].Jobs.Add(job.JobName, new BookmarkJobEntry() {
+            if (!_bookmarks[ecu.EcuName].Jobs.ContainsKey(job.JobName)) {
+                _bookmarks[ecu.EcuName].Jobs.Add(job.JobName, new BookmarkJobEntry() {
                     Jobcomment = job.JobComment,
                     Arguments = job.Arguments,
                     Results = new HashSet<JobResult>()
                 });
             }
 
-            _bookmarks[ecuName].Jobs[job.JobName].Results.Add(result);
+            if(!_bookmarks[ecu.EcuName].Jobs[job.JobName].Results.Contains(result)) {
+                _bookmarks[ecu.EcuName].Jobs[job.JobName].Results.Add(result);
+                SaveBookmarks();
+            }
         }
 
         public static void removeBookmark(string ecuName, string jobName, string resultName) {
@@ -48,11 +69,17 @@ namespace PrgTool {
                         _bookmarks.Remove(ecuName);
                     }
                 }
+
+                SaveBookmarks();
             }
         }
 
         public static Dictionary<string, BookmarkEntry> GetAllBookmarks() {
             return new Dictionary<string, BookmarkEntry>(_bookmarks);
+        }
+
+        private static void SaveBookmarks() {
+            File.WriteAllText(_bookmarkFilePath, JsonConvert.SerializeObject(_bookmarks));
         }
     }
 }
