@@ -638,6 +638,14 @@ namespace BmwDeepObd
                     _activityCommon.SetPreferredNetworkInterface();
                     if (data != null && resultCode == Android.App.Result.Ok)
                     {
+                        ActivityCommon.InterfaceType interfaceType = (ActivityCommon.InterfaceType)data.Extras.GetInt(XmlToolActivity.ExtraInterface, (int)ActivityCommon.InterfaceType.None);
+                        if (interfaceType != ActivityCommon.InterfaceType.None)
+                        {
+                            _activityCommon.SelectedInterface = interfaceType;
+                            _instanceData.DeviceName = data.Extras.GetString(XmlToolActivity.ExtraDeviceName);
+                            _instanceData.DeviceAddress = data.Extras.GetString(XmlToolActivity.ExtraDeviceAddress);
+                            _activityCommon.SelectedEnetIp = data.Extras.GetString(XmlToolActivity.ExtraEnetIp);
+                        }
                         _instanceData.ConfigFileName = data.Extras.GetString(XmlToolActivity.ExtraFileName);
                         ReadConfigFile();
                         UpdateOptionsMenu();
@@ -1241,7 +1249,7 @@ namespace BmwDeepObd
 
                         case ActivityCommon.InterfaceType.DeepObdWifi:
                             portName = "DEEPOBDWIFI";
-                            connectParameter = new EdCustomWiFiInterface.ConnectParameterType(_activityCommon.MaConnectivity);
+                            connectParameter = new EdCustomWiFiInterface.ConnectParameterType(_activityCommon.MaConnectivity, _activityCommon.MaWifi);
                             break;
 
                         case ActivityCommon.InterfaceType.Ftdi:
@@ -4095,11 +4103,24 @@ namespace BmwDeepObd
             {
                 return;
             }
+
+            if (_activityCommon.ShowConnectWarning(retry =>
+            {
+                if (retry)
+                {
+                    AdapterConfig();
+                }
+            }))
+            {
+                return;
+            }
+
             if (_activityCommon.SelectedInterface == ActivityCommon.InterfaceType.Enet)
             {
                 _activityCommon.EnetAdapterConfig();
                 return;
             }
+
             Intent serverIntent = new Intent(this, typeof(CanAdapterActivity));
             serverIntent.PutExtra(CanAdapterActivity.ExtraDeviceAddress, _instanceData.DeviceAddress);
             serverIntent.PutExtra(CanAdapterActivity.ExtraInterfaceType, (int)_activityCommon.SelectedInterface);

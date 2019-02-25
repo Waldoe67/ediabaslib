@@ -49,6 +49,8 @@ namespace BmwDeepObd
             public bool StoreAdaption { get; set; }
             public bool StopAdaption { get; set; }
             public bool AutoClose { get; set; }
+            public bool EcuReset { get; set; }
+            public bool AdaptionStored { get; set; }
         }
 
         // Intent extra
@@ -69,6 +71,7 @@ namespace BmwDeepObd
             Ok,
             IllegalArguments,
             AccessDenied,
+            ResetFailed,
         }
 
         public static XmlToolActivity.EcuInfo IntentEcuInfo { get; set; }
@@ -111,11 +114,13 @@ namespace BmwDeepObd
         private LinearLayout _layoutVagAdaptionEquipmentNumber;
         private TextView _textViewVagEquipmentNumberTitle;
         private EditText _editTextVagEquipmentNumber;
+        private LinearLayout _layoutAdaptionOperation;
         private TextView _textViewVagAdaptionOperationTitle;
         private Button _buttonAdaptionRead;
         private Button _buttonAdaptionTest;
         private Button _buttonAdaptionStore;
         private Button _buttonAdaptionStop;
+        private CheckBox _checkBoxEcuReset;
         private ActivityCommon _activityCommon;
         private Handler _updateHandler;
         private XmlToolActivity.EcuInfo _ecuInfo;
@@ -301,6 +306,9 @@ namespace BmwDeepObd
             _editTextVagEquipmentNumber = FindViewById<EditText>(Resource.Id.editTextVagEquipmentNumber);
             _editTextVagEquipmentNumber.EditorAction += AdaptionEditorAction;
 
+            _layoutAdaptionOperation = FindViewById<LinearLayout>(Resource.Id.layoutAdaptionOperation);
+            _layoutAdaptionOperation.SetOnTouchListener(this);
+
             _textViewVagAdaptionOperationTitle = FindViewById<TextView>(Resource.Id.textViewVagAdaptionOperationTitle);
             _textViewVagAdaptionOperationTitle.SetOnTouchListener(this);
 
@@ -335,6 +343,13 @@ namespace BmwDeepObd
             _buttonAdaptionStop.Click += (sender, args) =>
             {
                 _instanceData.StopAdaption = true;
+            };
+
+            _checkBoxEcuReset = FindViewById<CheckBox>(Resource.Id.checkBoxEcuReset);
+            _checkBoxEcuReset.SetOnTouchListener(this);
+            _checkBoxEcuReset.Click += (sender, args) =>
+            {
+                ReadAdaptionEditors();
             };
 
             UpdateAdaptionChannelList();
@@ -928,6 +943,11 @@ namespace BmwDeepObd
                 }
             }
 
+            if (_checkBoxEcuReset.Visibility == ViewStates.Visible)
+            {
+                _instanceData.EcuReset = _checkBoxEcuReset.Checked;
+            }
+
             if (dataChanged)
             {
                 UpdateAdaptionInfo();
@@ -1054,6 +1074,7 @@ namespace BmwDeepObd
             _layoutVagAdaptionWorkshop.Visibility = _instanceData.CurrentWorkshopNumber.HasValue ? ViewStates.Visible : ViewStates.Gone;
             _layoutVagAdaptionImporterNumber.Visibility = _instanceData.CurrentImporterNumber.HasValue ? ViewStates.Visible : ViewStates.Gone;
             _layoutVagAdaptionEquipmentNumber.Visibility = _instanceData.CurrentEquipmentNumber.HasValue ? ViewStates.Visible : ViewStates.Gone;
+            _checkBoxEcuReset.Visibility = isUdsEcu ? ViewStates.Visible : ViewStates.Gone;
         }
 
         private void UpdateAdaptionText(bool cyclicUpdate = false)
@@ -1320,6 +1341,7 @@ namespace BmwDeepObd
             }
             _buttonAdaptionTest.Visibility = isUdsEcu ? ViewStates.Gone : ViewStates.Visible;
             _buttonAdaptionStop.Enabled = jobRunning && !operationActive;
+            _checkBoxEcuReset.Enabled = _instanceData.AdaptionStored;
         }
 
         private void HideKeyboard()
@@ -1468,8 +1490,12 @@ namespace BmwDeepObd
             }
             _instanceData.StopAdaption = false;
             _instanceData.AutoClose = false;
+            _instanceData.EcuReset = false;
+            _instanceData.AdaptionStored = false;
+            _checkBoxEcuReset.Checked = false;
 
             bool executeFailed = false;
+            bool finishUpdate = false;
             JobStatus jobStatus = JobStatus.Unknown;
             _jobThread = new Thread(() =>
             {
@@ -1668,6 +1694,22 @@ namespace BmwDeepObd
                                 executeFailed = true;
                             }
 
+                            if (!executeFailed && stopAdaption && isUdsEcu && _instanceData.EcuReset)
+                            {
+                                int dataOffset = XmlToolActivity.VagUdsRawDataOffset;
+                                byte[] resetRequest = { 0x11, 0x02 };
+                                _ediabas.EdInterfaceClass.TransmitData(resetRequest, out byte[] resetResponse);
+                                if (resetResponse == null || resetResponse.Length < dataOffset + 2 || resetResponse[dataOffset + 0] != 0x51)
+                                {
+                                    executeFailed = true;
+                                    jobStatus = JobStatus.ResetFailed;
+                                }
+                                else
+                                {
+                                    finishUpdate = true;
+                                }
+                            }
+
                             if (executeFailed)
                             {
                                 break;
@@ -1680,6 +1722,7 @@ namespace BmwDeepObd
 
                             if (storeAdaption && is1281Ecu)
                             {
+                                _instanceData.StoreAdaption = false;
                                 break;
                             }
 
@@ -1814,6 +1857,7 @@ namespace BmwDeepObd
                                 {
                                     connected = false;
                                     _instanceData.AdaptionDataNew = null;
+                                    _instanceData.AdaptionStored = true;
                                 }
                                 else
                                 {
@@ -1885,6 +1929,10 @@ namespace BmwDeepObd
                             case JobStatus.AccessDenied:
                                 resId = Resource.String.vag_coding_write_coding_access_denied;
                                 break;
+
+                            case JobStatus.ResetFailed:
+                                resId = Resource.String.vag_coding_write_coding_reset_failed;
+                                break;
                         }
 
                         if (resId < 0)
@@ -1895,6 +1943,14 @@ namespace BmwDeepObd
                     }
                     else
                     {
+                        if (finishUpdate)
+                        {
+                            _ecuInfo.JobList = null;    // force update
+                            SetResult(Android.App.Result.Ok);
+                            Finish();
+                            return;
+                        }
+
                         if (_instanceData.AutoClose)
                         {
                             Finish();
@@ -1906,6 +1962,14 @@ namespace BmwDeepObd
                     {
                         _jobThread.Join();
                     }
+
+                    _instanceData.TestAdaption = false;
+                    _instanceData.StoreAdaption = false;
+                    _instanceData.StopAdaption = false;
+                    _instanceData.EcuReset = false;
+                    _instanceData.AdaptionStored = false;
+                    _checkBoxEcuReset.Checked = false;
+
                     UpdateAdaptionText(true);
                 });
             });

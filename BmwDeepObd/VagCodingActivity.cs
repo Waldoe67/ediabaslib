@@ -63,6 +63,7 @@ namespace BmwDeepObd
             Ok,
             IllegalArguments,
             AccessDenied,
+            ResetFailed,
         }
 
         public static XmlToolActivity.EcuInfo IntentEcuInfo { get; set; }
@@ -98,6 +99,7 @@ namespace BmwDeepObd
         private LinearLayout _layoutCodingButtons;
         private TextView _textViewVagCodingExecuteTitle;
         private Button _buttonCodingExecute;
+        private CheckBox _checkBoxEcuReset;
         private LinearLayout _layoutVagCodingAssitant;
         private ResultListAdapter _layoutVagCodingAssitantAdapter;
         private ListView _listViewVagCodingAssistant;
@@ -262,6 +264,9 @@ namespace BmwDeepObd
             {
                 ExecuteCodingRequest();
             };
+
+            _checkBoxEcuReset = FindViewById<CheckBox>(Resource.Id.checkBoxEcuReset);
+            _checkBoxEcuReset.SetOnTouchListener(this);
 
             _layoutVagCodingAssitant = FindViewById<LinearLayout>(Resource.Id.layoutVagCodingAssitant);
             _layoutVagCodingAssitant.SetOnTouchListener(this);
@@ -867,6 +872,7 @@ namespace BmwDeepObd
             string workshopNumberTitle = string.Empty;
             string importerNumberTitle = string.Empty;
             string equipmentNumberTitle = string.Empty;
+            bool jobRunning = IsJobRunning();
 
             if (_instanceData.CurrentCoding != null)
             {
@@ -939,7 +945,8 @@ namespace BmwDeepObd
             _editTextVagImporterNumber.Text = codingTextImporter;
             _textViewVagEquipmentNumberTitle.Text = equipmentNumberTitle;
             _editTextVagEquipmentNumber.Text = codingTextEquipment;
-            _buttonCodingExecute.Enabled = !IsJobRunning();
+            _checkBoxEcuReset.Enabled = !jobRunning;
+            _buttonCodingExecute.Enabled = !jobRunning;
         }
 
         private void UpdateCodingSelected(UdsFileReader.DataReader.DataInfoLongCoding dataInfoLongCoding, bool selectState)
@@ -992,6 +999,7 @@ namespace BmwDeepObd
         {
             UpdateCodingText();
 
+            bool isUdsEcu = XmlToolActivity.IsUdsEcu(_ecuInfo);
             bool shortCoding = IsShortCoding();
             StringBuilder sbCodingComment = new StringBuilder();
             List<TableResultItem> codingAssitantItems = new List<TableResultItem>();
@@ -1169,6 +1177,8 @@ namespace BmwDeepObd
             _layoutVagCodingWorkshop.Visibility = _instanceData.CurrentWorkshopNumber.HasValue ? ViewStates.Visible : ViewStates.Gone;
             _layoutVagCodingImporterNumber.Visibility = _instanceData.CurrentImporterNumber.HasValue ? ViewStates.Visible : ViewStates.Gone;
             _layoutVagCodingEquipmentNumber.Visibility = _instanceData.CurrentEquipmentNumber.HasValue ? ViewStates.Visible : ViewStates.Gone;
+
+            _checkBoxEcuReset.Visibility = isUdsEcu ? ViewStates.Visible : ViewStates.Gone;
 
             bool assistantChange = false;
             if (codingAssitantItems.Count == _layoutVagCodingAssitantAdapter.Items.Count)
@@ -1353,12 +1363,20 @@ namespace BmwDeepObd
 
             EdiabasOpen();
 
+            bool isUdsEcu = XmlToolActivity.IsUdsEcu(_ecuInfo);
+            bool ecuReset = false;
+            if (_checkBoxEcuReset.Visibility == ViewStates.Visible)
+            {
+                ecuReset = _checkBoxEcuReset.Checked;
+            }
+
             CustomProgressDialog progress = new CustomProgressDialog(this);
             progress.SetMessage(GetString(Resource.String.vag_coding_processing));
             progress.ButtonAbort.Visibility = ViewStates.Gone;
             progress.Show();
 
             bool executeFailed = false;
+            bool finishUpdate = false;
             JobStatus jobStatus = JobStatus.Unknown;
             _jobThread = new Thread(() =>
             {
@@ -1388,7 +1406,7 @@ namespace BmwDeepObd
                         codingValue = BitConverter.ToUInt64(dataArray, 0);
                     }
 
-                    if (_codingMode == CodingMode.SecurityAccess && XmlToolActivity.IsUdsEcu(_ecuInfo))
+                    if (_codingMode == CodingMode.SecurityAccess && isUdsEcu)
                     {
                         // send dummy request to open the connection first
                         _ediabas.ArgString = "0xF19E";  // ASAM data
@@ -1564,6 +1582,22 @@ namespace BmwDeepObd
                                 executeFailed = true;
                             }
                         }
+
+                        if (!executeFailed && ecuReset && isUdsEcu)
+                        {
+                            int dataOffset = XmlToolActivity.VagUdsRawDataOffset;
+                            byte[] resetRequest = { 0x11, 0x02 };
+                            _ediabas.EdInterfaceClass.TransmitData(resetRequest, out byte[] resetResponse);
+                            if (resetResponse == null || resetResponse.Length < dataOffset + 2 || resetResponse[dataOffset + 0] != 0x51)
+                            {
+                                executeFailed = true;
+                                jobStatus = JobStatus.ResetFailed;
+                            }
+                            else
+                            {
+                                finishUpdate = true;
+                            }
+                        }
                     }
                 }
                 catch (Exception)
@@ -1591,6 +1625,10 @@ namespace BmwDeepObd
 
                             case JobStatus.AccessDenied:
                                 resId = Resource.String.vag_coding_write_coding_access_denied;
+                                break;
+
+                            case JobStatus.ResetFailed:
+                                resId = Resource.String.vag_coding_write_coding_reset_failed;
                                 break;
                         }
 
@@ -1644,7 +1682,7 @@ namespace BmwDeepObd
                             .SetTitle(Resource.String.alert_title_info)
                             .SetNeutralButton(Resource.String.button_ok, (s, e) => { })
                             .Show();
-                        if (_codingMode == CodingMode.Coding)
+                        if (finishUpdate || _codingMode == CodingMode.Coding)
                         {
                             alertDialog.DismissEvent += (sender, args) =>
                             {

@@ -101,6 +101,28 @@ namespace EdiabasLib
 
         public bool ReconnectRequired { get; set; }
 
+        public int MaxBaudRate
+        {
+            get
+            {
+                // ReSharper disable once ArrangeAccessorOwnerBody
+                return 25000;
+            }
+        }
+
+        public int MinBaudRate
+        {
+            get
+            {
+                if (AdapterType < 0x0002 || AdapterVersion < 0x000D)
+                {
+                    return 4000;
+                }
+
+                return 980;
+            }
+        }
+
         public EdCustomAdapterCommon(SendDataDelegate sendDataFunc, ReceiveDataDelegate receiveDataFunc,
             DiscardInBufferDelegate discardInBufferFunc, ReadInBufferDelegate readInBufferFunc,
             int readTimeoutOffsetLong, int readTimeoutOffsetShort, int echoTimeout, bool echoFailureReconnect)
@@ -157,7 +179,7 @@ namespace EdiabasLib
                 return null;
             }
             if ((CurrentBaudRate != 115200) &&
-                ((CurrentBaudRate < 4000) || (CurrentBaudRate > 25000)))
+                ((CurrentBaudRate < MinBaudRate) || (CurrentBaudRate > MaxBaudRate)))
             {
                 if (Ediabas != null)
                 {
@@ -247,7 +269,7 @@ namespace EdiabasLib
                 }
                 return null;
             }
-            if ((CurrentBaudRate != EdInterfaceBase.BaudAuto) && ((CurrentBaudRate < 4000) || (CurrentBaudRate > 25000)))
+            if ((CurrentBaudRate != EdInterfaceBase.BaudAuto) && ((CurrentBaudRate < MinBaudRate) || (CurrentBaudRate > MaxBaudRate)))
             {
                 if (Ediabas != null)
                 {
@@ -773,14 +795,15 @@ namespace EdiabasLib
         public bool InterfaceReceiveData(byte[] receiveData, int offset, int length, int timeout, int timeoutTelEnd, EdiabasNet ediabasLog)
         {
             int timeoutOffset = _readTimeoutOffsetLong;
-            if (_readTimeoutOffsetShort >= 0)
+            if ((_readTimeoutOffsetShort >= 0) && (CurrentBaudRate >= 3000))
             {
                 if (((Stopwatch.GetTimestamp() - LastCommTick) < 100 * TickResolMs) && (timeout < 100))
                 {
                     timeoutOffset = _readTimeoutOffsetShort;
                 }
             }
-            //Ediabas?.LogFormat(EdiabasNet.EdLogLevel.Ifh, "Timeout offset {0}", timeoutOffset);
+
+            //Ediabas?.LogFormat(EdiabasNet.EdLogLevel.Ifh, "Timeout offset: {0}", timeoutOffset);
             timeout += timeoutOffset;
             timeoutTelEnd += timeoutOffset;
 

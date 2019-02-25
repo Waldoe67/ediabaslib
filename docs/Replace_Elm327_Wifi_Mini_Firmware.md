@@ -16,14 +16,14 @@ This chapter describes how to replace the ELM327 Wifi V1.5 HW: V01W_M_V1.0 adapt
 ## Step1: Program the ESP8266ex Soc
 * Connect your Usb to serial (take care ESP8266ex is not 5v tolerant!) to U0RXD (connects to TX), U0TXD (connects to RX) and GND
 * Connect GPIO0 to GND (this forces the ESP8266ex into bootloader on next bootup)
-* Connect MCLR to GND to force the PIC18F in high-Z
+* Connect MCLR to GND to force the PIC18F in high-Z (you could also use the PicKit programmer to keep the processor in reset)
 * Power the Elm327 adapter
 * Flash ESP-link firmware to the ESP8266ex using the instructions for 8Mbit/1MByte flash from [ESP-link serial flashing](https://github.com/jeelabs/esp-link/blob/master/FLASHING.md#initial-serial-flashing)
-* On Windows use [NodeMCU Flasher](https://github.com/nodemcu/nodemcu-flasher), this is easier to use.
+* Command line for flashing: `python.exe esptool.py --port COMX --baud 460800 write_flash -fs 1MB -ff 40m 0x00000 boot_v1.X.bin 0x01000 user1.bin 0xfc000 esp_init_data_default.bin 0xfe000 blank.bin`
 * Disconnect GPIO0 from GND (all others stay), Power cycle the Elm327 adapter, connect to ESP_XXYYZZ wifi network.
 * Using browser, browse to 192.168.4.1, select preset pin assignment: ESP-01, Change
 * Goto Debug log page, select UART debug log: off; Goto uC Console, select Baud 38400 for `default` PIC firmware, 115200 for `esp8266` firmware.
-* Optionally change network name in Wifi Soft-AP page
+* Change the SSID at the WiFi Soft-AP page to `DeepOBD`, this is required for the EdiabsLibConfig tool to work correctly.
 
 ## Step2: Program the PIC18F25K80
 * Connect your PicKit 3/4 to MCLR, PGD, PGC, GND (Vss) and 5V (Vcc) (take care, do not apply power from PicKit 3/4)
@@ -40,3 +40,4 @@ You could test reading the ignition pin with the following command (hex values):
 `82 F1 F1 FE FE 60`  
 The response is (additionally to the echo):  
 `82 F1 F1 FE <state> <checksum>` with state bit 0 set to 1 if ignition is on.  
+Sending binary data with plink: `plink -raw 192.168.4.1 -P 23 < data.bin`  

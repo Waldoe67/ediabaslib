@@ -1913,11 +1913,24 @@ namespace BmwDeepObd
             {
                 return;
             }
+
+            if (_activityCommon.ShowConnectWarning(retry =>
+            {
+                if (retry)
+                {
+                    AdapterConfig();
+                }
+            }))
+            {
+                return;
+            }
+
             if (_activityCommon.SelectedInterface == ActivityCommon.InterfaceType.Enet)
             {
                 _activityCommon.EnetAdapterConfig();
                 return;
             }
+
             Intent serverIntent = new Intent(this, typeof(CanAdapterActivity));
             serverIntent.PutExtra(CanAdapterActivity.ExtraDeviceAddress, _instanceData.DeviceAddress);
             serverIntent.PutExtra(CanAdapterActivity.ExtraInterfaceType, (int)_activityCommon.SelectedInterface);
@@ -7203,6 +7216,10 @@ namespace BmwDeepObd
                 return true;
             }
             Intent intent = new Intent();
+            intent.PutExtra(ExtraInterface, (int)_activityCommon.SelectedInterface);
+            intent.PutExtra(ExtraDeviceName, _instanceData.DeviceName);
+            intent.PutExtra(ExtraDeviceAddress, _instanceData.DeviceAddress);
+            intent.PutExtra(ExtraEnetIp, _activityCommon.SelectedEnetIp);
             intent.PutExtra(ExtraFileName, xmlFileName);
 
             // Set result and finish this Activity

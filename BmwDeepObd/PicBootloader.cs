@@ -25,7 +25,8 @@ namespace BmwDeepObd
             new FirmwareInfo("Type2.CanAdapterElm.X.production.hex", 0x030C, Device.Families.PIC18),
             new FirmwareInfo("Type3.CanAdapterElm.X.production.hex", 0x030C, Device.Families.PIC18),
             new FirmwareInfo("Type4.CanAdapterElm.X.production.hex", 0x030C, Device.Families.PIC18),
-            new FirmwareInfo("Type5.CanAdapterElm.X.production.hex", 0x030C, Device.Families.PIC18)
+            new FirmwareInfo("Type5.CanAdapterElm.X.production.hex", 0x030C, Device.Families.PIC18),
+            new FirmwareInfo("Type16.CanAdapterElm.X.production.hex", 0x030C, Device.Families.PIC18)
         };
 
         private class FirmwareInfo
@@ -2804,6 +2805,7 @@ namespace BmwDeepObd
                 Comm.BootInfo bootInfo = comm.ReadBootloaderInfo(20);
                 if (bootInfo.MajorVersion == 0 && bootInfo.MinorVersion == 0)
                 {
+                    Thread.Sleep(100);
                     comm.ActivateBootloader();
                     Thread.Sleep(600);
                     bootInfo = comm.ReadBootloaderInfo();
