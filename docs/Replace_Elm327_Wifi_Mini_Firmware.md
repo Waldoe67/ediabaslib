@@ -1,7 +1,6 @@
 # Replace ELM327 Wifi V1.5 HW: V01W_M_V1.0 adapter firmware
 
 This chapter describes how to replace the ELM327 Wifi V1.5 HW: V01W_M_V1.0 adapter PIC18F25K80 and ESP8266ex firmware.  
-**At the moment the firmware ist still untested and officially not supported by EdiabasLib!**
 
 ### Requirements:
 
@@ -15,7 +14,7 @@ This chapter describes how to replace the ELM327 Wifi V1.5 HW: V01W_M_V1.0 adapt
 
 ## Step1: Program the ESP8266ex Soc
 * Connect your Usb to serial (take care ESP8266ex is not 5v tolerant!) to U0RXD (connects to TX), U0TXD (connects to RX) and GND
-* Connect GPIO0 to GND (this forces the ESP8266ex into bootloader on next bootup)
+* Connect GPIO0 to GND (this forces the ESP8266ex into bootloader on next bootup). The reset test point is not usable, because it's connected to an output signal on the board.
 * Connect MCLR to GND to force the PIC18F in high-Z (you could also use the PicKit programmer to keep the processor in reset)
 * Power the Elm327 adapter
 * Flash ESP-link firmware to the ESP8266ex using the instructions for 8Mbit/1MByte flash from [ESP-link serial flashing](https://github.com/jeelabs/esp-link/blob/master/FLASHING.md#initial-serial-flashing)
@@ -28,6 +27,8 @@ This chapter describes how to replace the ELM327 Wifi V1.5 HW: V01W_M_V1.0 adapt
 * Goto the _Debug log_ page, select _UART debug log_: `off`.
 * Goto the _µC Console_, select _Baud_ `38400` for `default` PIC firmware and `115200` for `esp8266` firmware.
 * Change the _SSID_ at the _WiFi Soft-AP_ page to `DeepOBD`, this is required for the `EdiabasLibConfigTool.exe` to work correctly.
+* Optionally you could use preconfigured settings from the [latest binary](https://github.com/uholeschak/ediabaslib/releases/latest): `python.exe esptool.py --port COMX --baud 460800 write_flash 0x7e000 userdata.bin 0xfd000 sysdata.bin`
+* **Hint: A power on reset is required before every single flash operation.**
 
 ## Step2: Program the PIC18F25K80
 * Connect your PicKit 3/4 to MCLR, PGD, PGC, GND (Vss) and 5V (Vcc) (take care, do not apply power from PicKit 3/4)

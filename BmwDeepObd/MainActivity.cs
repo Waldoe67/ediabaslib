@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -149,6 +150,7 @@ namespace BmwDeepObd
             public string AppDataPath { get; set; }
             public string EcuPath { get; set; }
             public string VagPath { get; set; }
+            public string BmwPath { get; set; }
             public bool UserEcuFiles { get; set; }
             public bool TraceActive { get; set; }
             public bool TraceAppend { get; set; }
@@ -175,7 +177,7 @@ namespace BmwDeepObd
         private const string SharedAppName = ActivityCommon.AppNameSpace;
         private const string AppFolderName = ActivityCommon.AppNameSpace;
 #if OBB_MODE
-        private const string EcuDownloadUrl = @"http://www.holeschak.de/BmwDeepObd/Obb3.xml";
+        private const string EcuDownloadUrl = @"https://www.holeschak.de/BmwDeepObd/Obb.php";
         private const long EcuExtractSize = 2500000000;         // extracted ecu files size
         private const string InfoXmlName = "ObbInfo.xml";
         private const string ContentFileName = "Content.xml";
@@ -352,6 +354,7 @@ namespace BmwDeepObd
             _webClient = new WebClient();
             _webClient.DownloadProgressChanged += DownloadProgressChanged;
             _webClient.DownloadFileCompleted += DownloadCompleted;
+            _webClient.UploadValuesCompleted += UploadValuesCompleted;
 
             _stopCommRequest = Intent.GetBooleanExtra(ExtraStopComm, false);
             _connectTypeRequest = ActivityCommon.AutoConnectHandling;
@@ -1570,6 +1573,10 @@ namespace BmwDeepObd
             {
                 _instanceData.VagPath = Path.Combine(_instanceData.AppDataPath, ActivityCommon.EcuBaseDir, ActivityCommon.VagBaseDir);
             }
+            if (string.IsNullOrEmpty(_instanceData.BmwPath))
+            {
+                _instanceData.BmwPath = Path.Combine(_instanceData.AppDataPath, ActivityCommon.EcuBaseDir, ActivityCommon.BmwBaseDir);
+            }
 
             string backgroundImageFile = Path.Combine(_instanceData.AppDataPath, "Images", "Background.jpg");
             if (File.Exists(backgroundImageFile))
@@ -2329,17 +2336,20 @@ namespace BmwDeepObd
                     {
                         foreach (JobReader.DisplayInfo displayInfo in pageInfo.DisplayList)
                         {
-                            double? dataValue = null;
-                            string result = ActivityCommon.FormatResult(pageInfo, displayInfo, resultDict, out Android.Graphics.Color? textColor);
+                            string result = ActivityCommon.FormatResult(pageInfo, displayInfo, resultDict, out Android.Graphics.Color? textColor, out double? dataValue);
                             if (ActivityCommon.SelectedManufacturer != ActivityCommon.ManufacturerType.Bmw)
                             {
                                 if (ActivityCommon.VagUdsActive && !string.IsNullOrEmpty(pageInfo.JobsInfo.VagUdsFileName))
                                 {
                                     string udsFileName = Path.Combine(_instanceData.VagPath, pageInfo.JobsInfo.VagUdsFileName);
-                                    string resultUds = ActivityCommon.FormatResultVagUds(udsFileName, pageInfo, displayInfo, resultDict, out dataValue);
+                                    string resultUds = ActivityCommon.FormatResultVagUds(udsFileName, pageInfo, displayInfo, resultDict, out double? dataValueUds);
                                     if (!string.IsNullOrEmpty(resultUds))
                                     {
                                         result = resultUds;
+                                    }
+                                    if (dataValue == null)
+                                    {
+                                        dataValue = dataValueUds;
                                     }
                                 }
                             }
@@ -3152,11 +3162,43 @@ namespace BmwDeepObd
                     }
                     // ReSharper disable once RedundantNameQualifier
                     string extension = Path.GetExtension(fileName);
-                    if (string.Compare(extension, ".xml", StringComparison.OrdinalIgnoreCase) == 0)
-                    {   // XML URL file
+                    bool isPhp = string.Compare(extension, ".php", StringComparison.OrdinalIgnoreCase) == 0;
+                    if (isPhp || string.Compare(extension, ".xml", StringComparison.OrdinalIgnoreCase) == 0)
+                    {   // XML or PHP URL file
                         _webClient.Credentials = null;
                     }
-                    _webClient.DownloadFileAsync(new Uri(url), fileNameFull, downloadInfo);
+
+                    if (isPhp)
+                    {
+                        string obbName = string.Empty;
+                        string installer = string.Empty;
+                        try
+                        {
+                            obbName = Path.GetFileName(_obbFileName) ?? string.Empty;
+                            installer = PackageManager.GetInstallerPackageName(PackageName);
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
+
+                        NameValueCollection nameValueCollection = new NameValueCollection
+                        {
+                            {"appid", ActivityCommon.AppId},
+                            {"appver", string.Format(CultureInfo.InvariantCulture, "{0}", _currentVersionCode)},
+                            {"lang", ActivityCommon.GetCurrentLanguage()},
+                            {"android_ver", string.Format(CultureInfo.InvariantCulture, "{0}", Build.VERSION.Sdk)},
+                            {"fingerprint", Build.Fingerprint},
+                            {"obb_name", obbName},
+                            {"installer", installer},
+                        };
+
+                        _webClient.UploadValuesAsync(new Uri(url), null, nameValueCollection, downloadInfo);
+                    }
+                    else
+                    {
+                        _webClient.DownloadFileAsync(new Uri(url), fileNameFull, downloadInfo);
+                    }
                 }
                 catch (Exception)
                 {
@@ -3180,6 +3222,27 @@ namespace BmwDeepObd
             downloadThread.Start();
         }
 
+        private void UploadValuesCompleted(object sender, UploadValuesCompletedEventArgs e)
+        {
+            if (e.Error == null)
+            {
+                try
+                {
+                    DownloadInfo downloadInfo = e.UserState as DownloadInfo;
+                    byte[] response = e.Result;
+                    if (downloadInfo != null && response != null)
+                    {
+                        File.WriteAllBytes(downloadInfo.FileName, response);
+                    }
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
+            DownloadCompleted(sender, e);
+        }
+
         private void DownloadCompleted(object sender, AsyncCompletedEventArgs e)
         {
             RunOnUiThread(() =>
@@ -3192,13 +3255,14 @@ namespace BmwDeepObd
                 if (_downloadProgress != null)
                 {
                     bool error = false;
+                    string errorMessage = null;
                     _downloadProgress.ButtonAbort.Enabled = false;
                     if (downloadInfo != null)
                     {
 #if OBB_MODE
                         if (e.Error == null)
                         {
-                            string key = GetObbKey(downloadInfo.FileName);
+                            string key = GetObbKey(downloadInfo.FileName, out errorMessage);
                             try
                             {
                                 if (File.Exists(downloadInfo.FileName))
@@ -3216,6 +3280,7 @@ namespace BmwDeepObd
                                     new List<string> { Path.Combine(_instanceData.AppDataPath, "EcuVag") });
                                 return;
                             }
+
                             error = true;
                         }
 #else
@@ -3282,7 +3347,14 @@ namespace BmwDeepObd
 #endif
                     if ((!e.Cancelled && e.Error != null) || error)
                     {
-                        _activityCommon.ShowAlert(GetString(Resource.String.download_failed), Resource.String.alert_title_error);
+                        if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            _activityCommon.ShowAlert(errorMessage, Resource.String.alert_title_error);
+                        }
+                        else
+                        {
+                            _activityCommon.ShowAlert(GetString(Resource.String.download_failed), Resource.String.alert_title_error);
+                        }
                     }
                 }
                 if (downloadInfo != null)
@@ -3347,8 +3419,9 @@ namespace BmwDeepObd
         }
 
 #if OBB_MODE
-        private string GetObbKey(string xmlFile)
+        private string GetObbKey(string xmlFile, out string errorMessage)
         {
+            errorMessage = null;
             try
             {
                 if (!File.Exists(xmlFile))
@@ -3369,12 +3442,24 @@ namespace BmwDeepObd
                 {
                     return null;
                 }
+
+                foreach (XElement errorNode in xmlDoc.Root.Elements("error"))
+                {
+                    XAttribute messageAttr = errorNode.Attribute("message");
+                    if (!string.IsNullOrEmpty(messageAttr?.Value))
+                    {
+                        errorMessage = messageAttr.Value;
+                        return null;
+                    }
+                }
+
                 foreach (XElement fileNode in xmlDoc.Root.Elements("obb"))
                 {
                     XAttribute urlAttr = fileNode.Attribute("name");
                     if (!string.IsNullOrEmpty(urlAttr?.Value))
                     {
-                        if (string.Compare(baseName, urlAttr.Value, StringComparison.OrdinalIgnoreCase) == 0)
+                        if (string.Compare(baseName, urlAttr.Value, StringComparison.OrdinalIgnoreCase) == 0 ||
+                            string.Compare("*", urlAttr.Value, StringComparison.OrdinalIgnoreCase) == 0)
                         {
                             XAttribute keyAttr = fileNode.Attribute("key");
                             if (keyAttr != null)
@@ -4187,6 +4272,7 @@ namespace BmwDeepObd
             Intent serverIntent = new Intent(this, typeof(XmlToolActivity));
             serverIntent.PutExtra(XmlToolActivity.ExtraInitDir, _instanceData.EcuPath);
             serverIntent.PutExtra(XmlToolActivity.ExtraVagDir, _instanceData.VagPath);
+            serverIntent.PutExtra(XmlToolActivity.ExtraBmwDir, _instanceData.BmwPath);
             serverIntent.PutExtra(XmlToolActivity.ExtraAppDataDir, _instanceData.AppDataPath);
             serverIntent.PutExtra(XmlToolActivity.ExtraInterface, (int)_activityCommon.SelectedInterface);
             serverIntent.PutExtra(XmlToolActivity.ExtraDeviceName, _instanceData.DeviceName);

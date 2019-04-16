@@ -41,7 +41,7 @@
 \nFeel free to contribute or to report problems.
 \nA detailed documentation could also be found on this web site.
 \n\nChanges in this version:\n</string>
-  <string name="version_last_changes">- VAG lower baud rates supported\n- VAG ECU reset added\n- Fixed minor problems</string>
+  <string name="version_last_changes">- Write protection option for configurations\n- Updated BMW ECU files\n- Ethernet cable support\n- Allow custom data conversion for gauge\n- Fixed minor problems</string>
   <string name="app_info_message">Deep OBD for BMW and VAG\nVersion: {0}\nId: {1}</string>
   <string name="vag_mode_info">The VAG mode ist still experimental.\nA <a href='https://github.com/uholeschak/ediabaslib/blob/master/docs/Replacement_firmware_for_ELM327.md'>Deep OBD Adapter</a> with at least firmware version 0.11 is required.\nAt the moment only the protocols KWP2000, KWP1281, TP2.0 and UDS are supported.\nConfigurations have to regenerated for the new VAG mode\n.It\'s possible to select the old VAG mode again in the settings dialog.</string>
 
@@ -57,7 +57,7 @@
   <string name="exp_down_button_resume">Resume Download</string>
   <string name="exp_down_button_cancel">Cancel</string>
   <string name="exp_down_button_cancel_verify">Cancel Verification</string>
-  <string name="exp_down_obb_missing">The app has not been downloaded from Google Play and the extension file is missing.</string>
+  <string name="exp_down_obb_missing">Приложение не было загружено из Google Play и файл расширения отсутствует.\nЗагрузите OBB-файл при помощи APK загрузчика из Google Play и скопируйте его с именем\'{0}\'\nв один из каталогов:\n{1}\nПоддержка для этого отсутствует, использование Google Play - единственный рекомендуемый способ.</string>
   <string name="exp_down_time_remaining">Time remaining: {0}</string>
 
   <!-- Downloader library (modfications) -->
@@ -243,7 +243,8 @@
   <!-- ENET adapter config -->
   <string name="enet_adapter_web_info">The default password for the adapter web interface is root.\nIf the adapter gets unreachable after configuration you have to open the adapter and press the reset button after the adapter has booted.</string>
   <string name="enet_adapter_wifi_info">If you are using a Deep OBD BMW Wi-Fi adapter select the access point with the name \'Deep OBD BMW\', the default password is deepobdbmw.</string>
-  <string name="enet_adapter_ssid_warn">You are not connected with a Deep OBD BMW Wi-Fi adapter.\nDo you want to select a different access point?</string>
+  <string name="enet_adapter_ssid_warn">You are not connected with a Deep OBD BMW Wi-Fi or oder Unichip ENET Wi-Fi adapter.\nDo you want to select a different access point?</string>
+  <string name="enet_ethernet_hint">If you are using a direct Ethernet cable connection, you have configure the Android LAN adapter with an Auto IP address,\nfor example 169.254.1.10 / 255.255.0.0.</string>
 
   <!-- ELM327 Wi-Fi -->
   <string name="elmwifi_adapter_warn">You are not connected with an ELM327 Wi-Fi adapter.\nDo you want to select a different access point?</string>
@@ -334,7 +335,7 @@
   <string name="xml_tool_msg_save_config">Do you want to save the configuration?</string>
   <string name="xml_tool_msg_save_config_select">Do you want to save the configuration and use as active configuration?</string>
   <string name="xml_tool_msg_save_config_empty">You have selected no data to display.\nClick the ECUs and select the desired jobs and results.\nDo you want to save the configuration anyway?</string>
-  <string name="xml_tool_msg_ecu_error">Unable to get valid informations for some ECUs.</string>
+  <string name="xml_tool_msg_ecu_error">Unable to get valid information for some ECUs.</string>
   <string name="xml_tool_msg_pin78">A connection of the adapter pins 7 and 8 is required to detect more ECUs.\nFor vehicles with OBD I socket in the engine bay additionally the pin 8 of the OBD II socket has to be connected at the vehicle side.</string>
   <string name="xml_tool_select_ecu_type">Select ECU type</string>
   <string name="xml_tool_ecu_list">Detected ECUs</string>
@@ -412,6 +413,7 @@
   <string name="xml_tool_button_sec_access">Security access</string>
   <string name="xml_tool_execute_test_job">Executing job</string>
   <string name="xml_tool_read_test_job_failed">Executing job failed</string>
+  <string name="xml_tool_ecu_msg_save_lock">Writing the configuration has been disabled in the configuration file.\nStoring of the modifications is not possible.</string>
   <string name="xml_tool_ecu_msg_no_selection">You have selected no data to display.\nFor this select the desired jobs and results first from the list.\nDo you want to abort anyway?</string>
   <string name="xml_tool_ecu_msg_no_grid_selection">You have activated the graphical display, but not selected any graphical design.\nNothing will be displayed.\nDo you want to abort anyway?</string>
   <string name="xml_tool_result_amount_limit">Depending on the ECU type the amount of results is limited.\nIf you select too many results no data will be transmitted.</string>

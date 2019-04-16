@@ -41,7 +41,7 @@
 \nВы можете принять участие в проекте или же сообщить об ошибках.
 \nДополнительную информацию вы можете найти на этой веб-странице.
 \n\nИзменения в этой версии:\n</string>
-  <string name="version_last_changes">- Добавлена адаптация для VAG\n- Исправлены незначительные проблемы</string>
+  <string name="version_last_changes">- Опция защиты изменения конфигураций\n- Обновлены файлы BMW ECU\n- Поддержка Ethernet кабеля\n-Позволяет пользователю преобразовывать данные для графического отображения\n- Исправлены незначительные проблемы</string>
   <string name="app_info_message">Deep OBD для BMW и VAG\nВерсия: {0}\nId: {1}</string>
   <string name="vag_mode_info">VAG режим пока что экспериментальный.\nНеобходимо <a href='https://github.com/uholeschak/ediabaslib/blob/master/docs/Replacement_firmware_for_ELM327.md'>Deep OBD устройство</a> с версией программного обеспечения не менее 0.11.\nНа данный момент поддерживаются только KWP2000, KWP1281, TP2.0 и UDS протоколы.\nКонфигурации для нового режима VAG необходимо генерировать заново.\nВ диалоговом окне настроек можно снова выбрать старый режим VAG.</string>
 
@@ -57,7 +57,8 @@
   <string name="exp_down_button_resume">Продолжить загрузку</string>
   <string name="exp_down_button_cancel">Отменить</string>
   <string name="exp_down_button_cancel_verify">Отменить проверку</string>
-  <string name="exp_down_obb_missing">Приложение не было загружено из Google Play и файл расширения отсутствует.</string>
+  <!--Translate-->
+  <string name="exp_down_obb_missing">Приложение не было загружено из Google Play и файл расширения отсутствует.\nDownload the OBB file with an APK downloader from Google Play and copy it with the name:\n\'{0}\'\ninto one of the directories:\n{1}\nThere is not support for this, using Google Play is the only recommended way.</string>
   <string name="exp_down_time_remaining">Необходимое время: {0}</string>
 
   <!-- Downloader library -->
@@ -266,7 +267,8 @@
   <!-- ENET adapter config -->
   <string name="enet_adapter_web_info">Пароль для веб интерфейса устойства по умолчанию root.\nЕсли устройство после его конфигурирования больше не реагирует - необходимо открыть устройство, перезагрузить его и нажать кнопку сброса.</string>
   <string name="enet_adapter_wifi_info">Если вы используете OBD BMW Wi-Fi устройство, выберите точку доступа с именем \'Deep OBD BMW\'. Пароль по умолчанию deepobdbmw.</string>
-  <string name="enet_adapter_ssid_warn">Вы соединены не с Deep OBD BMW Wi-Fi устройством.\nВыбрать другую точку доступа?</string>
+  <string name="enet_adapter_ssid_warn">Вы соединены не с Deep OBD BMW Wi-Fi или Unichip ENET Wi-Fi устройством.\nВыбрать другую точку доступа?</string>
+  <string name="enet_ethernet_hint">В случае если вы используете прямое подключение Ethernet-кабеля, то необходимо настроить сетевой адаптер Android с автоматическим IP-адресом (например 169.254.1.10 / 255.255.0.0).</string>
 
   <!-- ELM327 Wi-Fi -->
   <string name="elmwifi_adapter_warn">Вы соединены не с ELM327 Wi-Fi устройством.\nВыбрать другую точку доступа?</string>
@@ -435,6 +437,7 @@
   <string name="xml_tool_button_sec_access">Права доступа</string>
   <string name="xml_tool_execute_test_job">Выполнение Job</string>
   <string name="xml_tool_read_test_job_failed">Не удалось выполнить Job</string>
+  <string name="xml_tool_ecu_msg_save_lock">Запись конфигурации была заблокирована в файле конфигурации.\nИзменения не могут быть сохранены.</string>
   <string name="xml_tool_ecu_msg_no_selection">Вы не выбрали данные для отображения.\nВыберите сначала нужные задания и результаты из списка.\nВы все равно хотите отменить?</string>
   <string name="xml_tool_ecu_msg_no_grid_selection">Вы активировали графический дисплей, но не выбрали графическое представление.\nОтображение не будет выводится на экран\nДействительно хотите отменить?</string>
   <string name="xml_tool_result_amount_limit">Количество результатов ограничено типом ECU.\nДанные не будут переданы, если вы выберете слишком много результатов.</string>
@@ -455,8 +458,7 @@
   <string name="vag_coding_workshop_number_title">Номер мастерской (деc.): {0}-{1}</string>
   <string name="vag_coding_importer_number_title">Номер импортёра (деc.): {0}-{1}</string>
   <string name="vag_coding_equipment_number_title">Номер устройства (деc.): {0}-{1}</string>
-  <!--Translate-->
-  <string name="vag_coding_ecu_reset">Perform ECU reset</string>
+  <string name="vag_coding_ecu_reset">Выполнить ECU сброс</string>
   <string name="vag_coding_assistant_title">Помощник по кодированию</string>
   <string name="vag_coding_execute_title">Выполнить операцию</string>
   <string name="vag_coding_button_execute">Выполнить</string>
@@ -465,8 +467,7 @@
   <string name="vag_coding_write_coding_illegal_arguments">Аргументы для операции находятся вне рабочего диапазона</string>
   <string name="vag_coding_write_coding_failed">Ошибка выполнения операции</string>
   <string name="vag_coding_write_coding_access_denied">В доступе отказано, сначала вы должны авторизироваться</string>
-  <!--Translate-->
-  <string name="vag_coding_write_coding_reset_failed">The ECU reset failed</string>
+  <string name="vag_coding_write_coding_reset_failed">Ошибка сброса ECU</string>
   <string name="vag_coding_write_coding_ok">Кодирование успешно завершено</string>
   <string name="vag_coding_write_coding2_failed">Не удалось записать кодировку.\nЕсли код был неправильным, то вам необходимо оставить зажигание включённым как минимум на 10 минут, прежде чем пытаться снова!</string>
   <string name="vag_coding_login_job_failed">Ошибка авторизации.\nЕсли код был неправильным, то вам необходимо выключить зажигание на 1-2 минуты, прежде чем пытаться снова!</string>
@@ -495,8 +496,7 @@
   <string name="vag_adaption_button_test">Тестировать</string>
   <string name="vag_adaption_button_store">Сохранить</string>
   <string name="vag_adaption_button_stop">Остановить</string>
-  <!--Translate-->
-  <string name="vag_adaption_ecu_reset">Perform ECU reset</string>
+  <string name="vag_adaption_ecu_reset">Выполнить ECU сброс</string>
 
     <!-- CAN Adapter Activity -->
   <string name="can_adapter_title">CAN адаптер</string>

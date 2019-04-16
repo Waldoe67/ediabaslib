@@ -94,7 +94,7 @@ namespace EdiabasLib
             }
         }
 
-        public static void ExecuteNetworkCommand(ExecuteNetworkDelegate command, object connManager)
+        public static void ExecuteNetworkCommand(ExecuteNetworkDelegate command, object connManager, bool checkEthernet = false)
         {
 #if Android
             if (Android.OS.Build.VERSION.SdkInt < Android.OS.BuildVersionCodes.Lollipop)
@@ -115,11 +115,46 @@ namespace EdiabasLib
                         Android.Net.NetworkInfo networkInfo = connectivityManager.GetNetworkInfo(network);
                         Android.Net.NetworkCapabilities networkCapabilities = connectivityManager.GetNetworkCapabilities(network);
                         // HasTransport support started also with Lollipop
-                        if (networkInfo != null && networkInfo.IsConnected &&
-                            networkCapabilities != null && networkCapabilities.HasTransport(Android.Net.TransportType.Wifi))
+                        if (networkInfo != null && networkInfo.IsConnected && networkCapabilities != null)
                         {
-                            bindNetwork = network;
-                            break;
+                            bool linkValid = false;
+                            bool autoIp = false;
+                            Android.Net.LinkProperties linkProperties = connectivityManager.GetLinkProperties(network);
+                            foreach (Android.Net.LinkAddress linkAddress in linkProperties.LinkAddresses)
+                            {
+                                if (linkAddress.Address is Java.Net.Inet4Address inet4Address)
+                                {
+                                    if (inet4Address.IsSiteLocalAddress || inet4Address.IsLinkLocalAddress)
+                                    {
+                                        linkValid = true;
+                                        autoIp = inet4Address.IsLinkLocalAddress;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (linkValid)
+                            {
+                                if (networkCapabilities.HasTransport(Android.Net.TransportType.Wifi))
+                                {
+                                    bindNetwork = network;
+                                }
+                                if (checkEthernet && networkCapabilities.HasTransport(Android.Net.TransportType.Ethernet))
+                                {
+                                    if (autoIp)
+                                    {
+                                        // prefer Ethernet auto ip
+                                        bindNetwork = network;
+                                        break;
+                                    }
+
+                                    if (bindNetwork == null)
+                                    {
+                                        // prefer Wifi
+                                        bindNetwork = network;
+                                    }
+                                }
+                            }
                         }
                     }
                 }

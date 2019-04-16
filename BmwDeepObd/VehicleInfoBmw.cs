@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using EdiabasLib;
 using ICSharpCode.SharpZipLib.Zip;
@@ -122,7 +121,7 @@ namespace BmwDeepObd
             }
         }
 
-        private const string DatabaseName = @".Database.Database.zip";
+        private const string DatabaseFileName = @"Database.zip";
 
         // ReSharper disable RedundantExplicitArrayCreation
         // ReSharper disable CoVariantArrayConversion
@@ -868,7 +867,7 @@ namespace BmwDeepObd
 
         private static Dictionary<string, string> _typeKeyDict;
 
-        public static Dictionary<string, string> GetTypeKeyDict(EdiabasNet ediabas)
+        public static Dictionary<string, string> GetTypeKeyDict(EdiabasNet ediabas, string databaseDir)
         {
             ediabas?.LogString(EdiabasNet.EdLogLevel.Ifh, "Extract type key dict");
 
@@ -878,12 +877,8 @@ namespace BmwDeepObd
                 ZipFile zf = null;
                 try
                 {
-                    using (Stream fs = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(XmlToolActivity).Namespace + DatabaseName))
+                    using (FileStream fs = File.OpenRead(Path.Combine(databaseDir, DatabaseFileName)))
                     {
-                        if (fs == null)
-                        {
-                            ediabas?.LogString(EdiabasNet.EdLogLevel.Ifh, "Open database failed");
-                        }
                         zf = new ZipFile(fs);
                         foreach (ZipEntry zipEntry in zf)
                         {
@@ -935,7 +930,7 @@ namespace BmwDeepObd
             }
         }
 
-        public static string GetTypeKeyFromVin(string vin, EdiabasNet ediabas)
+        public static string GetTypeKeyFromVin(string vin, EdiabasNet ediabas, string databaseDir)
         {
             ediabas?.LogFormat(EdiabasNet.EdLogLevel.Ifh, "Type key from VIN: {0}", vin ?? "No VIN");
             if (vin == null)
@@ -962,12 +957,8 @@ namespace BmwDeepObd
                 ZipFile zf = null;
                 try
                 {
-                    using (Stream fs = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(XmlToolActivity).Namespace + DatabaseName))
+                    using (FileStream fs = File.OpenRead(Path.Combine(databaseDir, DatabaseFileName)))
                     {
-                        if (fs == null)
-                        {
-                            ediabas?.LogString(EdiabasNet.EdLogLevel.Ifh, "Open database failed");
-                        }
                         zf = new ZipFile(fs);
                         foreach (ZipEntry zipEntry in zf)
                         {
@@ -1035,17 +1026,17 @@ namespace BmwDeepObd
             return null;
         }
 
-        public static string GetVehicleTypeFromVin(string vin, EdiabasNet ediabas)
+        public static string GetVehicleTypeFromVin(string vin, EdiabasNet ediabas, string databaseDir)
         {
             ediabas?.LogFormat(EdiabasNet.EdLogLevel.Ifh, "Vehicle type from VIN: {0}", vin ?? "No VIN");
-            string typeKey = GetTypeKeyFromVin(vin, ediabas);
+            string typeKey = GetTypeKeyFromVin(vin, ediabas, databaseDir);
             if (typeKey == null)
             {
                 return null;
             }
             if (_typeKeyDict == null)
             {
-                _typeKeyDict = GetTypeKeyDict(ediabas);
+                _typeKeyDict = GetTypeKeyDict(ediabas, databaseDir);
             }
             if (_typeKeyDict == null)
             {
