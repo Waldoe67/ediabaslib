@@ -34,7 +34,7 @@
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi-v7a;x86;x86_64;arm64-v8a</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <Debugger>Xamarin</Debugger>
     <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
@@ -84,6 +84,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.CSharp" />
     <Reference Include="System" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -261,9 +262,11 @@
     <EmbeddedResource Include="..\EdiabasLib\CanAdapterElm\CanAdapterElm.X\dist\spp_uart\production\CanAdapterElm.X.production.hex">
       <Link>HexFiles\Type5\CanAdapterElm.X.production.hex</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="Database\Database.zip" />
     <EmbeddedResource Include="..\EdiabasLib\CanAdapterElm\CanAdapterElm.X\dist\esp8266\production\CanAdapterElm.X.production.hex">
       <Link>HexFiles\Type16\CanAdapterElm.X.production.hex</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\EdiabasLib\CanAdapterElm\CanAdapterElm.X\dist\yc1021\production\CanAdapterElm.X.production.hex">
+      <Link>HexFiles\Type6\CanAdapterElm.X.production.hex</Link>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
@@ -454,7 +457,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\background.jpg" />
+    <AndroidResource Include="Resources\drawable-nodpi\background.jpg" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\menu\ediabas_tool_menu.xml" />
